@@ -18,6 +18,10 @@ package ar.net.argentum.cliente.gui;
 
 import ar.net.argentum.cliente.Cliente;
 import java.awt.event.KeyEvent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
 /**
  *
@@ -42,21 +46,16 @@ public class PanelJugar extends javax.swing.JPanel {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        consola = new javax.swing.JTextArea();
         jPanel1 = new javax.swing.JPanel();
         txtMensaje = new javax.swing.JTextField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        consola = new javax.swing.JTextPane();
 
         setBackground(new java.awt.Color(102, 102, 102));
         setPreferredSize(new java.awt.Dimension(800, 600));
         setSize(new java.awt.Dimension(800, 600));
 
         jLabel1.setText("{{usuario}}");
-
-        consola.setColumns(20);
-        consola.setRows(5);
-        consola.setEnabled(false);
-        jScrollPane1.setViewportView(consola);
 
         jPanel1.setSize(new java.awt.Dimension(544, 416));
 
@@ -77,6 +76,12 @@ public class PanelJugar extends javax.swing.JPanel {
             }
         });
 
+        jScrollPane2.setBackground(new java.awt.Color(0, 0, 0));
+
+        consola.setEditable(false);
+        consola.setBackground(new java.awt.Color(0, 0, 0));
+        jScrollPane2.setViewportView(consola);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -86,9 +91,9 @@ public class PanelJugar extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtMensaje, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 546, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtMensaje, javax.swing.GroupLayout.DEFAULT_SIZE, 546, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
@@ -98,10 +103,10 @@ public class PanelJugar extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGap(28, 28, 28)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtMensaje, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -119,15 +124,20 @@ public class PanelJugar extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextArea consola;
+    private javax.swing.JTextPane consola;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField txtMensaje;
     // End of variables declaration//GEN-END:variables
 
     public void agregarMensajeConsola(String mensaje) {
-        consola.append(mensaje+"\n");
+        Document doc = consola.getDocument();
+        try {
+            doc.insertString(doc.getLength(), mensaje+"\n", GUI.getEstilos().getStyle("CHAT"));
+        } catch (BadLocationException ex) {
+            Logger.getLogger(PanelJugar.class.getName()).log(Level.SEVERE, null, ex);
+        }
         consola.setCaretPosition(consola.getDocument().getLength()-1);
     }
 }

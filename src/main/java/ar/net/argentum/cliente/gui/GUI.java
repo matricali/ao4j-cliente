@@ -17,7 +17,11 @@
 package ar.net.argentum.cliente.gui;
 
 import ar.net.argentum.cliente.Cliente;
+import java.awt.Color;
 import javax.swing.JOptionPane;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 
 /**
  *
@@ -25,11 +29,30 @@ import javax.swing.JOptionPane;
  */
 public class GUI {
 
+    private static StyleContext estilos;
+
+    private GUI() {
+
+    }
+
     public static void mostrarMensaje(String mensaje, String titulo) {
         JOptionPane.showMessageDialog(Cliente.getCliente().getVentanaPrincipal(), mensaje, titulo, JOptionPane.PLAIN_MESSAGE);
     }
 
     public static void mostrarMensaje(String mensaje) {
         JOptionPane.showMessageDialog(Cliente.getCliente().getVentanaPrincipal(), mensaje);
+    }
+
+    public static StyleContext getEstilos() {
+        if (null == estilos) {
+            estilos = new StyleContext();
+
+            final Style mensajesChat = estilos.addStyle("CHAT", null);
+            mensajesChat.addAttribute(StyleConstants.Foreground, Color.LIGHT_GRAY);
+            mensajesChat.addAttribute(StyleConstants.FontSize, 16);
+            mensajesChat.addAttribute(StyleConstants.FontFamily, "serif");
+        }
+
+        return estilos;
     }
 }
