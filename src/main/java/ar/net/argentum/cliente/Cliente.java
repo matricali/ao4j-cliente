@@ -22,6 +22,8 @@ import ar.net.argentum.cliente.gui.PanelJugar;
 import ar.net.argentum.cliente.gui.VentanaPrincipal;
 import ar.net.argentum.cliente.protocolo.ConexionConServidor;
 import java.awt.CardLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import javax.swing.JPanel;
 
@@ -73,6 +75,15 @@ public class Cliente {
 
         // Creamos la ventana principal
         this.ventana = new VentanaPrincipal();
+
+        // Agregamos un evento al cerrar la ventana
+        ventana.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                if (conexion != null) {
+                    conexion.terminar();
+                }
+            }
+        });
 
         // Agregamos el panel padre a la ventana principal
         ventana.add(panelPadre);

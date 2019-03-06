@@ -104,7 +104,7 @@ public class ConexionConServidor extends Thread {
                             mensaje = "Has sido desconectado del servidor. Razon desconocida.";
                         }
                         GUI.mostrarMensaje(mensaje, "Has sido desconectado");
-                        this.corriendo = false;
+                        terminar();
                         break;
 
                     case 0x3:
@@ -119,18 +119,11 @@ public class ConexionConServidor extends Thread {
                 }
             }
 
-            // Cerramos el socket
-            socket.close();
-
-            // Cerramos los recursos abiertos
-            dis.close();
-            dos.close();
         } catch (HeadlessException | IOException e) {
             Logger.getLogger(ConexionConServidor.class.getName()).log(Level.SEVERE, null, e);
         }
 
-        // Volvemos a la pantalla de conectar
-        Cliente.getCliente().mostrarPanel("conectar");
+        terminar();
     }
 
     public void enviarChat(String mensaje) {
@@ -140,5 +133,31 @@ public class ConexionConServidor extends Thread {
         } catch (IOException ex) {
             Logger.getLogger(ConexionConServidor.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public void terminar() {
+        this.corriendo = false;
+
+        try {
+            // Cerramos el socket
+            socket.close();
+        } catch (IOException ex) {
+            Logger.getLogger(ConexionConServidor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        // Cerramos los recursos abiertos
+        try {
+            dis.close();
+        } catch (IOException ex) {
+            Logger.getLogger(ConexionConServidor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            dos.close();
+        } catch (IOException ex) {
+            Logger.getLogger(ConexionConServidor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        // Volvemos a la pantalla de conectar
+        Cliente.getCliente().mostrarPanel("conectar");
     }
 }
