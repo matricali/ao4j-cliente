@@ -20,6 +20,7 @@ import ar.net.argentum.cliente.Cliente;
 import java.awt.event.KeyEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
@@ -131,13 +132,7 @@ public class PanelJugar extends javax.swing.JPanel {
     private javax.swing.JTextField txtMensaje;
     // End of variables declaration//GEN-END:variables
 
-    public void agregarMensajeConsola(String mensaje) {
-        Document doc = consola.getDocument();
-        try {
-            doc.insertString(doc.getLength(), mensaje+"\n", GUI.getEstilos().getStyle("CHAT"));
-        } catch (BadLocationException ex) {
-            Logger.getLogger(PanelJugar.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        consola.setCaretPosition(consola.getDocument().getLength()-1);
+    public JTextPane getConsola() {
+        return consola;
     }
 }

@@ -64,7 +64,7 @@ public class ConexionConServidor extends Thread {
                 this.socket = new Socket(ip, puerto);
             } catch (ConnectException ex) {
                 // Volvemos a la pantalla de conectar
-                Cliente.getCliente().mostrarPanel("conectar");
+                GUI.mostrarPanel("conectar");
 
                 // Mostramos mensaje de error
                 GUI.mostrarMensaje(ex.getMessage(), "No se pudo conectar al servidor");
@@ -88,7 +88,7 @@ public class ConexionConServidor extends Thread {
             dos.writeUTF(password);
 
             // Mostramos el panel de juego
-            Cliente.getCliente().mostrarPanel("jugar");
+            GUI.mostrarPanel("jugar");
 
             // Este bucle se encarga de intercambiar la informacion con el servidor
             while (corriendo) {
@@ -100,21 +100,28 @@ public class ConexionConServidor extends Thread {
                     case 0x1:
                         // Desconectar
                         String mensaje = dis.readUTF();
+                        
+                        // Mostramos la pantalla de conectar
+                        GUI.mostrarPanel("conectar");
+                        
+                        // Mostramos el mensaje
                         if (mensaje.isEmpty()) {
                             mensaje = "Has sido desconectado del servidor. Razon desconocida.";
                         }
                         GUI.mostrarMensaje(mensaje, "Has sido desconectado");
+                        
+                        // Nos hecharon, no hay nada mas que hacer.
                         terminar();
                         break;
 
                     case 0x3:
                         // Mensaje de chat
-                        Cliente.getCliente().getPanelJugar().agregarMensajeConsola(dis.readUTF());
+                        GUI.agregarMensajeConsola(dis.readUTF());
                         break;
 
                     default:
                         String received = dis.readUTF();
-                        Cliente.getCliente().getPanelJugar().agregarMensajeConsola(received);
+                        GUI.agregarMensajeConsola(received);
                         System.out.println(received);
                 }
             }
@@ -158,6 +165,6 @@ public class ConexionConServidor extends Thread {
         }
 
         // Volvemos a la pantalla de conectar
-        Cliente.getCliente().mostrarPanel("conectar");
+        GUI.mostrarPanel("conectar");
     }
 }
