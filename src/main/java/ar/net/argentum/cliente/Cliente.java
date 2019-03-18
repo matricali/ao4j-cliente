@@ -16,19 +16,24 @@
  */
 package ar.net.argentum.cliente;
 
-import ar.net.argentum.cliente.gui.GUI;
-import ar.net.argentum.cliente.gui.PanelJugar;
-import ar.net.argentum.cliente.gui.VentanaPrincipal;
+import ar.net.argentum.cliente.interfaz.IInterfaz;
+import ar.net.argentum.cliente.motor.MotorGrafico;
+import ar.net.argentum.cliente.motor.gamedata.GameData;
 import ar.net.argentum.cliente.protocolo.ConexionConServidor;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.IOException;
+
+import org.lwjgl.glfw.*;
+import org.lwjgl.system.*;
+
+import static org.lwjgl.glfw.GLFW.*;
+import org.lwjgl.opengl.GL;
+import static org.lwjgl.system.MemoryUtil.*;
 
 /**
  *
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */
-public class Cliente {
+public class Cliente implements ClienteArgentum {
 
     private static Cliente instancia;
 
@@ -43,46 +48,175 @@ public class Cliente {
         return instancia;
     }
 
-    private final VentanaPrincipal ventana;
-    private GUI interfaz;
-    private ConexionConServidor conexion = null;
+    /**
+     * This error callback will simply print the error to
+     * <code>System.err</code>.
+     */
+    private static GLFWErrorCallback errorCallback
+            = GLFWErrorCallback.createPrint(System.err);
 
+    /**
+     * This key callback will check if ESC is pressed and will close the window
+     * if it is pressed.
+     */
+    private GLFWKeyCallback keyCallback;
+
+    private GameData game;
+    private ConexionConServidor conexion = null;
+    private final MotorGrafico motor;
+
+    private boolean jugando = false;
+    private long window;
+
+    /**
+     * Cliente de Argentum Online
+     *
+     * @author Jorge Matricali <jorgematricali@gmail.com>
+     */
     private Cliente() {
 
-        // Creamos la ventana principal
-        this.ventana = new VentanaPrincipal();
+        // Establecemos una devolución de llamada de error.
+        // Imprimimos todo en la consola de errores.
+        glfwSetErrorCallback(errorCallback);
 
-        // Agregamos un evento al cerrar la ventana
-        ventana.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                if (conexion != null) {
-                    conexion.terminar();
+        // Inicializar GLFW. La mayoria de las funciones GLFW no funcionan 
+        // sin antes hacer esto.
+        if (!glfwInit()) {
+            throw new IllegalStateException("No se pudo inicializar GLFW");
+        }
+
+        // Configuraramos el modo de video GLFW con OPENGL3C
+        glfwDefaultWindowHints(); // opcional
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        // OpenGL 3.2 Core Profile
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        if (Platform.get() == Platform.MACOSX) {
+            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+        }
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+
+        // Creamos la ventana
+        // this.window = glfwCreateWindow(800, 600, "Argentum Online", glfwGetPrimaryMonitor(), NULL);
+        this.window = glfwCreateWindow(800, 600, "Argentum Online", NULL, NULL);
+
+        if (window == NULL) {
+            glfwTerminate();
+            throw new RuntimeException("Ocurrio un error al crear la ventana GLFW");
+        }
+
+        glfwMakeContextCurrent(window);
+
+        // This line is critical for LWJGL's interoperation with GLFW's
+        // OpenGL context, or any context that is managed externally.
+        // LWJGL detects the context that is current in the current thread,
+        // creates the GLCapabilities instance and makes the OpenGL
+        // bindings available for use.
+        GL.createCapabilities();
+
+        // Setup a key callback. It will be called every time a key is pressed, repeated or released.
+        this.keyCallback = new GLFWKeyCallback() {
+            @Override
+            public void invoke(long window, int key, int scancode, int action, int mods) {
+                if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+                    glfwSetWindowShouldClose(window, true);
                 }
+
+                motor.keyEvents(window, key, scancode, action, mods);
+//                interfaz.keyEvents(window, key, scancode, action, mods);
             }
-        });
+        };
 
-        this.interfaz = GUI.iniciar(ventana);
+        glfwSetKeyCallback(window, keyCallback);
 
+//        // Get the thread stack and push a new frame
+//        try (MemoryStack stack = MemoryStack.stackPush()) {
+//            IntBuffer pWidth = stack.mallocInt(1); // int*
+//            IntBuffer pHeight = stack.mallocInt(1); // int*
+//
+//            // Get the window size passed to glfwCreateWindow
+//            glfwGetWindowSize(window, pWidth, pHeight);
+//
+//            // Get the resolution of the primary monitor
+//            GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+//
+//            // Center the window
+//            glfwSetWindowPos(
+//                    window,
+//                    (vidmode.width() - pWidth.get(0)) / 2,
+//                    (vidmode.height() - pHeight.get(0)) / 2
+//            );
+//        } // the stack frame is popped automatically
         // Mostramos la ventana
-        ventana.setVisible(true);
+        glfwShowWindow(window);
+
+        this.game = GameData.getInstancia();
+
+        // Iniciamos la carga de los datos del juego
+        game.initialize();
+
+//        // Agregamos un evento al cerrar la ventana
+//        ventana.addWindowListener(new WindowAdapter() {
+//            public void windowClosing(WindowEvent e) {
+//                if (conexion != null) {
+//                    conexion.terminar();
+//                }
+//            }
+//        });
+        // Iniciamos el motor grafico
+        this.motor = new MotorGrafico(this, window, game);
+        motor.iniciar();
+        
+        // Cerramos la conexion
+        if (conexion != null) {
+            conexion.detener();
+        }
+
+        // Liberamos la ventana y los callbacks
+        glfwDestroyWindow(window);
+        keyCallback.free();
+
+        // Terminamos GLFW y liberamos el callback de error
+        glfwTerminate();
+        errorCallback.free();
     }
 
-    public void conectar(String direccion, int puerto, String username, String password) {
+    @Override
+    public void conectar(String servidor, int puerto, String username, String password) {
         System.out.println("Conectando...");
-        GUI.mostrarPanel("cargando");
-        this.conexion = new ConexionConServidor(direccion, puerto, username, password);
+        this.conexion = new ConexionConServidor(this, servidor, puerto, username, password);
         conexion.start();
     }
 
-    public VentanaPrincipal getVentanaPrincipal() {
-        return ventana;
-    }
-
+    @Override
     public ConexionConServidor getConexion() {
         return conexion;
     }
 
-    public GUI getInterfaz() {
-        return interfaz;
+    @Override
+    public MotorGrafico getMotorGrafico() {
+        return motor;
+    }
+
+    @Override
+    public boolean isJugando() {
+        return jugando;
+    }
+
+    @Override
+    public void setJugando(boolean jugando) {
+        this.jugando = jugando;
+    }
+
+    @Override
+    public IInterfaz getInterfaz() {
+        return this.motor.getInterfaz();
+    }
+
+    @Override
+    public GameData getJuego() {
+        return this.game;
     }
 }
