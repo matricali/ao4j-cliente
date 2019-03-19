@@ -14,15 +14,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ar.net.argentum.cliente.motor.user;
+package ar.net.argentum.cliente.motor;
 
-import ar.net.argentum.cliente.motor.MotorGrafico;
 import ar.net.argentum.cliente.motor.gamedata.AnimCuerpo;
 import ar.net.argentum.cliente.motor.gamedata.Animacion;
 import ar.net.argentum.cliente.motor.gamedata.AnimCabeza;
 import ar.net.argentum.cliente.motor.gamedata.Posicion;
 import ar.net.argentum.cliente.motor.gamedata.AnimEscudo;
 import ar.net.argentum.cliente.motor.gamedata.AnimArma;
+import ar.net.argentum.cliente.motor.user.Orientacion;
 
 /**
  * Representa un personaje en el mundo
@@ -88,7 +88,7 @@ public class Personaje {
         this.setMoveOffsetX(-1 * (MotorGrafico.TILE_PIXEL_WIDTH * x));
         this.setMoveOffsetY(-1 * (MotorGrafico.TILE_PIXEL_HEIGHT * y));
         this.Moving = 1;
-        this.orientacion = orientacion;
+        this.setOrientacion(orientacion);
         this.setScrollDirectionX((short) x);
         this.setScrollDirectionY((short) y);
         return this;
@@ -232,5 +232,47 @@ public class Personaje {
      */
     public void setPosicion(Posicion posicion) {
         this.posicion = posicion;
+    }
+
+    /**
+     * @param cuerpo the cuerpo to set
+     */
+    public void setCuerpo(AnimCuerpo cuerpo) {
+        this.cuerpo = cuerpo;
+    }
+
+    /**
+     * @param cabeza the cabeza to set
+     */
+    public void setCabeza(AnimCabeza cabeza) {
+        this.cabeza = cabeza;
+    }
+
+    /**
+     * @param casco the casco to set
+     */
+    public void setCasco(AnimCabeza casco) {
+        this.casco = casco;
+    }
+
+    /**
+     * @param arma the arma to set
+     */
+    public void setArma(AnimArma arma) {
+        this.arma = arma;
+    }
+
+    /**
+     * @param escudo the escudo to set
+     */
+    public void setEscudo(AnimEscudo escudo) {
+        this.escudo = escudo;
+    }
+
+    /**
+     * @param orientacion the orientacion to set
+     */
+    public void setOrientacion(Orientacion orientacion) {
+        this.orientacion = orientacion;
     }
 }

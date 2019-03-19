@@ -19,6 +19,8 @@ package ar.net.argentum.cliente.motor.gamedata;
 /**
  * Representa un casillero del mapa
  *
+ * @see MapBlock
+ *
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */
 public class Baldosa {
@@ -30,79 +32,180 @@ public class Baldosa {
      * capa 2 y 1. 4 - Representa el techo, esta capa no se dibuja si el usuario
      * esta bajo techo.
      */
-    private Animacion[] capa = new Animacion[4 + 1];
-    private short charindex;
-    private Animacion objgrh;
-    private short npcindex;
+    protected Animacion[] capa = new Animacion[4 + 1];
+    /**
+     * Animacion del objeto arrojado en el suelo
+     */
+    protected Animacion objgrh;
+    /**
+     * Animacion del efecto
+     */
+    protected Animacion fx;
+    /**
+     * Objeto arrojado en el suelo
+     */
     protected Objeto objeto;
+    /**
+     * ID del personaje que esta parado en esta baldosa
+     */
+    protected short charindex;
+    /**
+     * ID del NPC que esta parado en esta baldosa
+     */
+    protected short npcindex;
     /**
      * Posicion en el mundo a donde la persona tiene que ser teletransportada el
      * pisar esta baldosa.
      */
-    private Coordenada teletransporte;
-    private byte bloqueado;
-    private short trigger;
+    protected Coordenada teletransporte;
+    /**
+     * Verdadero si la baldosa esta bloqueada
+     */
+    protected byte bloqueado;
+    /**
+     * Atributos especiales de la baldosa
+     */
+    protected short trigger;
 
+    /**
+     * Generar una nueva baldosa
+     */
     public Baldosa() {
         capa[1] = new Animacion();
         capa[2] = new Animacion();
         capa[3] = new Animacion();
         capa[4] = new Animacion();
         objgrh = new Animacion();
+        fx = new Animacion();
     }
 
+    /**
+     * Obtiene el grafico de la capa dada
+     *
+     * @param num_capa
+     * @return
+     */
     public Animacion getCapa(int num_capa) {
         return capa[num_capa];
     }
 
+    /**
+     * Establece el grafico de la capa dada
+     *
+     * @param num_capa
+     * @param anim
+     * @return
+     */
     public Baldosa setCapa(int num_capa, Animacion anim) {
         this.capa[num_capa] = anim;
         return this;
     }
 
+    /**
+     * Obtiene el ID del personaje ubicado en esta baldosa
+     *
+     * @return
+     */
     public int getCharindex() {
         return charindex;
     }
 
+    /**
+     * Establece el ID del personaje ubicado en esta baldosa
+     *
+     * @param charindex
+     * @return
+     */
     public Baldosa setCharindex(short charindex) {
         this.charindex = charindex;
         return this;
     }
-    
+
+    /**
+     * Establece el ID del personaje ubicado en esta baldosa
+     *
+     * @param charindex
+     * @return
+     */
     public Baldosa setCharindex(int charindex) {
         return setCharindex((short) charindex);
     }
 
+    /**
+     * Devuelve verdadero si la baldosa esta bloqueada
+     *
+     * @return
+     */
     public boolean isBloqueado() {
         return bloqueado == 1;
     }
 
+    /**
+     * Bloquea o desbloquea la baldosa.
+     *
+     * @param bloq 1 == BLOQUEADO, 0 == DESBLOQUEADO
+     * @return
+     */
     public Baldosa setBloqueado(byte bloq) {
         this.bloqueado = bloq;
         return this;
     }
 
+    /**
+     * Bloquea o desbloquea la baldosa
+     *
+     * @param bloq
+     * @return
+     */
+    public Baldosa setBloqueado(boolean bloq) {
+        return setBloqueado(bloq ? (byte) 1 : 0);
+    }
+
+    /**
+     * Establece atributos de la baldosa
+     *
+     * @param trigger
+     * @return
+     */
     public Baldosa setTrigger(short trigger) {
         this.trigger = trigger;
         return this;
     }
 
+    /**
+     * Obtiene la animacion para dibujar el objeto que esta en esta baldosa
+     *
+     * @return
+     */
     public Animacion getAnimObjecto() {
         return objgrh;
     }
 
     /**
-     * @return the objeto
+     * Obtiene el objeto que esta arrojado en esta baldosa
+     *
+     * @return
      */
     public Objeto getObjeto() {
         return objeto;
     }
 
     /**
-     * @param objeto the objeto to set
+     * Establece un objeto en esta baldosa
+     *
+     * @param objeto
      */
     public void setObjeto(Objeto objeto) {
         this.objgrh = new Animacion(objeto.getGrh(), false);
         this.objeto = objeto;
+    }
+
+    public boolean isAgua() {
+//        If ((.Graphic(1).GrhIndex >= 1505 And .Graphic(1).GrhIndex <= 1520) Or (.Graphic(1).GrhIndex >= 5665 And .Graphic(1).GrhIndex <= 5680) Or (.Graphic(1).GrhIndex >= 13547 And .Graphic(1).GrhIndex <= 13562)) And .Graphic(2).GrhIndex = 0 Then
+//                        Map_CheckWater = True
+//                  Else
+//                        Map_CheckWater = False
+//                  End If
+        return false;
     }
 }

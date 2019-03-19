@@ -8,7 +8,6 @@ import ar.net.argentum.cliente.motor.gamedata.Sprite;
 import ar.net.argentum.cliente.motor.surface.ISurface;
 import ar.net.argentum.cliente.motor.surface.SurfaceRasta;
 import ar.net.argentum.cliente.motor.user.Orientacion;
-import ar.net.argentum.cliente.motor.user.Personaje;
 import ar.net.argentum.cliente.interfaz.GUI;
 import ar.net.argentum.cliente.interfaz.IInterfaz;
 import ar.net.argentum.cliente.motor.gamedata.AnimArma;
@@ -26,6 +25,9 @@ import static org.lwjgl.glfw.GLFW.*;
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */
 public class MotorGrafico {
+
+    public static final int TILE_PIXEL_WIDTH = 32;
+    public static final int TILE_PIXEL_HEIGHT = 32;
 
     private final ClienteArgentum cliente;
     ISurface surface;
@@ -49,9 +51,6 @@ public class MotorGrafico {
 
     final int halfWindowTileWidth = 8;
     final int halfWindowTileHeight = 6;
-
-    public static final int TILE_PIXEL_WIDTH = 32;
-    public static final int TILE_PIXEL_HEIGHT = 32;
 
     final int scrollPixelsPerFrameX = 8;
     final int scrollPixelsPerFrameY = 8;
@@ -119,7 +118,7 @@ public class MotorGrafico {
 //        Objeto obj2 = new Objeto(2, 520, "TEST", 20);
 //        game.getBaldosa(x + 2, y + 2).setObjeto(obj1);
 //
-//        actualizarPersonajes();
+//        personajesActualizarTodos();
 //        user.setPosicion(x, y);
 //        user.setNombre("R4ST4");
 //        user.setMinHP(50);
@@ -251,6 +250,14 @@ public class MotorGrafico {
         this.userMoving = true;
     }
 
+    /**
+     * Hacer caminar al personaje un paso en la direccion dada
+     *
+     * @see MooveCharByHead
+     *
+     * @param id_personaje
+     * @param orientacion
+     */
     public void personajeDarPaso(int id_personaje, Orientacion orientacion) {
         int addX = 0;
         int addY = 0;
@@ -285,12 +292,20 @@ public class MotorGrafico {
         nX = X + addX;
         nY = Y + addY;
 
-        game.getBaldosa(X, Y).setCharindex(0);
-        game.getBaldosa(nX, nY).setCharindex(id_personaje);
+        /**
+         * Movemos la entidad en el mundo. Basicamente sacamos el personaje de
+         * la baldosa anterior y luego lo ponemos en la nueva
+         */
+        try {
+            game.getMapa().getBaldosa(X, Y).setCharindex(0);
+            game.getMapa().getBaldosa(nX, nY).setCharindex(id_personaje);
+        } catch (Exception ex) {
+            
+        }
 
         personaje.setPosicion(nX, nY);
         personaje.setMovimiento(addX, addY, orientacion);
-        
+
         if (id_personaje == 1) {
             game.getUsuario().setPosicion(nX, nY);
         }
@@ -408,13 +423,13 @@ public class MotorGrafico {
         for (y = screenMinY; y <= screenMaxY; y++) {
             for (x = screenMinX; x <= screenMaxX; x++) {
                 // Dibujamos la primer capa
-                dibujarAnimacion(game.getBaldosa(x, y).getCapa(1),
+                dibujarAnimacion(game.getMapa().getBaldosa(x, y).getCapa(1),
                         (screenX - 1) * TILE_PIXEL_WIDTH + pixelOffsetX,
                         (screenY - 1) * TILE_PIXEL_HEIGHT + pixelOffsetY, true, true, false, ambientcolor);
 
                 // Dibujamos la segunda capa
-                if (game.getBaldosa(x, y).getCapa(2).esValido()) {
-                    dibujarAnimacion(game.getBaldosa(x, y).getCapa(2),
+                if (game.getMapa().getBaldosa(x, y).getCapa(2).esValido()) {
+                    dibujarAnimacion(game.getMapa().getBaldosa(x, y).getCapa(2),
                             (screenX - 1) * TILE_PIXEL_WIDTH + pixelOffsetX,
                             (screenY - 1) * TILE_PIXEL_HEIGHT + pixelOffsetY, true, true, false, ambientcolor);
                 }
@@ -431,20 +446,20 @@ public class MotorGrafico {
                 int xd = screenX * 32 + pixelOffsetX;
                 int yd = screenY * 32 + pixelOffsetY;
                 // Si hay un objeto arrojado en el suelo en esta posicion, entonces lo dibujamos.
-                if (game.getBaldosa(x, y).getAnimObjecto().esValido()) {
-                    dibujarAnimacion(game.getBaldosa(x, y).getAnimObjecto(), xd, yd, true, true, false, ambientcolor);
+                if (game.getMapa().getBaldosa(x, y).getAnimObjecto().esValido()) {
+                    dibujarAnimacion(game.getMapa().getBaldosa(x, y).getAnimObjecto(), xd, yd, true, true, false, ambientcolor);
                 } else {
 
                 }
 
                 // Si hay un personaje parado en esta posicion, entonces lo dibujamos.
-                if (game.getBaldosa(x, y).getCharindex() > 0) {
-                    dibujarPersonaje(game.getBaldosa(x, y).getCharindex(), xd, yd);
+                if (game.getMapa().getBaldosa(x, y).getCharindex() > 0) {
+                    dibujarPersonaje(game.getMapa().getBaldosa(x, y).getCharindex(), xd, yd);
                 }
 
                 // Dibujamos la capa 3
-                if (game.getBaldosa(x, y).getCapa(3).esValido()) {
-                    dibujarAnimacion(game.getBaldosa(x, y).getCapa(3), xd,
+                if (game.getMapa().getBaldosa(x, y).getCapa(3).esValido()) {
+                    dibujarAnimacion(game.getMapa().getBaldosa(x, y).getCapa(3), xd,
                             yd, true, true, false, ambientcolor);
                 }
                 screenX++;
@@ -459,8 +474,8 @@ public class MotorGrafico {
                 int xd = screenX * 32 + pixelOffsetX;
                 int yd = screenY * 32 + pixelOffsetY;
                 // Dibujamos el techo
-                if (game.getBaldosa(x, y).getCapa(4).esValido()) {
-                    dibujarAnimacion(game.getBaldosa(x, y).getCapa(4), xd,
+                if (game.getMapa().getBaldosa(x, y).getCapa(4).esValido()) {
+                    dibujarAnimacion(game.getMapa().getBaldosa(x, y).getCapa(4), xd,
                             yd, true, true, false, ambientcolor);
                 }
                 screenX++;
@@ -646,6 +661,10 @@ public class MotorGrafico {
         interfaz.keyEvents(window, key, scancode, action, mods);
     }
 
+    private Posicion calcularPaso(Posicion posicion, Orientacion orientacion) {
+        return calcularPaso(posicion.x(), posicion.y(), orientacion);
+    }
+
     public Posicion calcularPaso(int x, int y, Orientacion orientacion) {
         int addX = 0;
         int addY = 0;
@@ -674,15 +693,23 @@ public class MotorGrafico {
     public void usuarioCamina(Orientacion orientacion) {
         Usuario user = game.getUsuario();
 
-        Posicion nuevaPosicion = calcularPaso(user.getPosicion().x(), user.getPosicion().y(), orientacion);
-        Baldosa nuevaBaldosa = game.getBaldosa(nuevaPosicion.x(), nuevaPosicion.y());
+        Posicion nuevaPosicion = calcularPaso(user.getPosicion(), orientacion);
+        Baldosa nuevaBaldosa = game.getMapa().getBaldosa(nuevaPosicion.x(), nuevaPosicion.y());
 
-        if (nuevaBaldosa == null || nuevaBaldosa.isBloqueado()) {
+        if (nuevaBaldosa == null) {
             return;
         }
-        moverPantalla(orientacion);
-        personajeDarPaso(1, orientacion);
-        actualizarPersonajes();
+
+        if (game.getMapa().isPosicionValida(nuevaPosicion) && !user.isParalizado()) {
+            cliente.getConexion().enviarUsuarioCaminar(orientacion);
+            personajeDarPaso(1, orientacion);
+            moverPantalla(orientacion);
+        } else {
+            personajes[1].setOrientacion(orientacion);
+            cliente.getConexion().enviarUsuarioCambiarDireccion(orientacion);
+        }
+
+        personajesActualizarTodos();
     }
 
     public int crearPersonaje(int id, String nombre, int x, int y, Orientacion orientacion, int cabeza, int cuerpo, int casco, int arma, int escudo) {
@@ -706,15 +733,25 @@ public class MotorGrafico {
         return id;
     }
 
-    public void actualizarPersonajes() {
+    /**
+     * Asegurarse que todos los personajes estan ubicados en la baldosa que les
+     * corresponde
+     *
+     * @see RefreshAllChars
+     */
+    public void personajesActualizarTodos() {
         for (short i = 1; i <= game.getLastChar(); i++) {
             if (personajes[i].isActivo()) {
-                game.getBaldosa(personajes[i].getPosicion()).setCharindex(i);
+                game.getMapa().getBaldosa(personajes[i].getPosicion()).setCharindex(i);
             }
         }
     }
 
     public IInterfaz getInterfaz() {
         return interfaz;
+    }
+
+    public Personaje getPersonaje(int charindex) {
+        return personajes[charindex];
     }
 }

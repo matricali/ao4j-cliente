@@ -30,6 +30,9 @@ public class Usuario {
     protected int maxHambre;
     protected int minSed;
     protected int maxSed;
+    
+    protected boolean paralizado;
+    protected boolean navegando;
 
     public Usuario(GameData game) {
         this(game, "");
@@ -210,5 +213,33 @@ public class Usuario {
      */
     public void setMaxSed(int maxSed) {
         this.maxSed = maxSed;
+    }
+
+    /**
+     * @return the navegando
+     */
+    public boolean isNavegando() {
+        return navegando;
+    }
+
+    /**
+     * @param navegando the navegando to set
+     */
+    public void setNavegando(boolean navegando) {
+        this.navegando = navegando;
+    }
+
+    /**
+     * @return the paralizado
+     */
+    public boolean isParalizado() {
+        return paralizado;
+    }
+
+    /**
+     * @param paralizado the paralizado to set
+     */
+    public void setParalizado(boolean paralizado) {
+        this.paralizado = paralizado;
     }
 }

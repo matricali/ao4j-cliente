@@ -16,10 +16,6 @@
  */
 package ar.net.argentum.cliente.motor.user;
 
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.function.Supplier;
-
 /**
  * Representa la orientacion hacia la que mira un personaje
  *
@@ -49,6 +45,6 @@ public enum Orientacion {
                 return o;
             }
         }
-        throw new IllegalArgumentException("Orientacion invalida ("+valor+")");
+        throw new IllegalArgumentException("Orientacion invalida (" + valor + ")");
     }
 }

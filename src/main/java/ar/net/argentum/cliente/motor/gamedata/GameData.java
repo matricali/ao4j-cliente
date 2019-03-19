@@ -61,13 +61,13 @@ public class GameData {
     private AnimCabeza[] d_cascos;
     private AnimArma[] d_armas;
     private AnimEscudo[] d_escudos;
-
     private Sprite[] grh_data;
-    private Baldosa[][] map_data;
+
     public int last_char = 0;
     private int cantidadGraficos;
+    
+    protected Mapa mapa;
     protected Usuario usuario;
-    protected int mapaActual = 0;
 
     private GameData() {
         this.usuario = new Usuario(this);
@@ -346,103 +346,8 @@ public class GameData {
         }
     }
 
-    public void cargarMapa(int num_mapa) {
-        try {
-            System.out.print("Iniciando carga del mapa " + num_mapa + "...");
-            reiniciar();
-            this.mapaActual = num_mapa;
-            try (RandomAccessFile f = new RandomAccessFile("recursos/mapas/mapa" + num_mapa + ".map", "r")) {
-                f.seek(0);
-
-                short version = bigToLittle_Short(f.readShort());
-                byte[] cabecera = new byte[263];
-                f.read(cabecera);
-
-                byte byflags = 0;
-                short tempint;
-
-                tempint = bigToLittle_Short(f.readShort());
-                tempint = bigToLittle_Short(f.readShort());
-                tempint = bigToLittle_Short(f.readShort());
-                tempint = bigToLittle_Short(f.readShort());
-
-                byte bloq;
-                short tempshort;
-
-                for (int y = 1; y <= 100; y++) {
-                    for (int x = 1; x <= 100; x++) {
-                        Baldosa md = new Baldosa();
-
-                        byflags = bigToLittle_Byte(f.readByte());
-                        bloq = (byte) (byflags & 1);
-                        md.setBloqueado(bloq);
-
-                        // Grafico de la capa 1
-                        tempshort = bigToLittle_Short(f.readShort());
-                        if (tempshort < cantidadGraficos) {
-                            md.setCapa(1, new Animacion(tempshort, true));
-                        }
-
-                        // Graficoo de la capa 2
-                        if ((byte) (byflags & 2) != 0) {
-                            tempshort = bigToLittle_Short(f.readShort());
-                            if (tempshort < cantidadGraficos) {
-                                md.setCapa(2, new Animacion(tempshort, true));
-                            }
-                        } else {
-                            md.setCapa(2, new Animacion());
-                        }
-
-                        // Grafico de la capa 3
-                        if ((byte) (byflags & 4) != 0) {
-                            tempshort = bigToLittle_Short(f.readShort());
-                            if (tempshort < cantidadGraficos) {
-                                md.setCapa(3, new Animacion(tempshort, true));
-                            }
-                        } else {
-                            md.setCapa(3, new Animacion());
-                        }
-
-                        // Grafico de la capa 4
-                        if ((byte) (byflags & 8) != 0) {
-                            tempshort = bigToLittle_Short(f.readShort());
-                            if (tempshort < cantidadGraficos) {
-                                md.setCapa(4, new Animacion(tempshort, true));
-                            }
-                        } else {
-                            md.setCapa(4, new Animacion());
-                        }
-
-                        if ((byte) (byflags & 16) != 0) {
-                            md.setTrigger(bigToLittle_Short(f.readShort()));
-                        } else {
-                            md.setTrigger((short) 0);
-                        }
-
-                        if (md.getCharindex() > 0) {
-                            //EraseChar;
-                        }
-
-                        map_data[x][y] = md;
-                    }
-                }
-            }
-            System.out.print("...loadMapData OK!");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
     public Sprite getSprite(int index) {
         return grh_data[index];
-    }
-
-    public Baldosa getBaldosa(int x, int y) {
-        return map_data[x][y];
-    }
-
-    public Baldosa getBaldosa(Posicion pos) {
-        return map_data[pos.x()][pos.y()];
     }
 
     public int getLastChar() {
@@ -479,13 +384,27 @@ public class GameData {
     public void reiniciar() {
         // Reiniciamos los tiles del mapa
         // Matriz de 100x100 baldosas
-        this.map_data = new Baldosa[101][101];
+//        this.map_data = new Baldosa[101][101];
 
         // Reiniciamos la data del usuario
         this.usuario = new Usuario(this);
     }
-    
+
     public int getMapaActual() {
-        return mapaActual;
+        if (mapa == null) {
+            return 0;
+        }
+        return getMapa().getNumMapa();
+    }
+
+    public void cargarMapa(int numMapa) {
+        this.mapa = new Mapa(this, numMapa);
+    }
+
+    /**
+     * @return the mapa
+     */
+    public Mapa getMapa() {
+        return mapa;
     }
 }
