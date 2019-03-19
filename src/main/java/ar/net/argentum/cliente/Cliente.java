@@ -21,6 +21,8 @@ import ar.net.argentum.cliente.motor.MotorGrafico;
 import ar.net.argentum.cliente.motor.gamedata.GameData;
 import ar.net.argentum.cliente.protocolo.ConexionConServidor;
 import java.io.IOException;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 
 import org.lwjgl.glfw.*;
 import org.lwjgl.system.*;
@@ -35,9 +37,11 @@ import static org.lwjgl.system.MemoryUtil.*;
  */
 public class Cliente implements ClienteArgentum {
 
-    private static Cliente instancia;
+    protected static final Logger LOGGER = Logger.getLogger(ConexionConServidor.class);
+    protected static Cliente instancia;
 
     public static void main(String[] args) throws IOException {
+        BasicConfigurator.configure();
         Cliente cliente = Cliente.getCliente();
     }
 
@@ -168,7 +172,7 @@ public class Cliente implements ClienteArgentum {
         // Iniciamos el motor grafico
         this.motor = new MotorGrafico(this, window, game);
         motor.iniciar();
-        
+
         // Cerramos la conexion
         if (conexion != null) {
             conexion.detener();
@@ -185,7 +189,7 @@ public class Cliente implements ClienteArgentum {
 
     @Override
     public void conectar(String servidor, int puerto, String username, String password) {
-        System.out.println("Conectando...");
+        LOGGER.info("Conectando...");
         this.conexion = new ConexionConServidor(this, servidor, puerto, username, password);
         conexion.start();
     }

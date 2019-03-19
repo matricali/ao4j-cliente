@@ -109,7 +109,6 @@ public class Utils {
     public static ByteBuffer ioResourceToByteBuffer(String resource, int bufferSize) throws IOException {
         ByteBuffer buffer;
         URL url = Thread.currentThread().getContextClassLoader().getResource(resource);
-        System.out.println(url);
         File file = new File(url.getFile());
         if (file.isFile()) {
             return ioResourceToByteBuffer(file, bufferSize);

@@ -19,8 +19,7 @@ package ar.net.argentum.cliente.motor.gamedata;
 import ar.net.argentum.general.UtilLegacy;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -28,7 +27,7 @@ import java.util.logging.Logger;
  */
 public class Mapa {
 
-    protected static final Logger LOGGER = Logger.getLogger(Mapa.class.getName());
+    protected static final Logger LOGGER = Logger.getLogger(Mapa.class);
     protected final GameData juego;
 
     protected Baldosa[][] baldosas;
@@ -39,7 +38,7 @@ public class Mapa {
     protected int maxYBorder = 90;
 
     public Mapa(GameData juego, int numMapa) {
-        LOGGER.log(Level.INFO, "Iniciando carga del mapa " + numMapa + "...");
+        LOGGER.info("Iniciando carga del mapa " + numMapa + "...");
 
         this.juego = juego;
         this.baldosas = new Baldosa[101][101];
@@ -121,9 +120,9 @@ public class Mapa {
                 }
             }
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.fatal(null, ex);
         }
-        LOGGER.log(Level.INFO, "Carga del mapa finalizada.");
+        LOGGER.info("Carga del mapa finalizada.");
     }
 
     public Baldosa getBaldosa(int x, int y) {

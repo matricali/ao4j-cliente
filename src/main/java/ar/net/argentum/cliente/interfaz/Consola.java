@@ -47,7 +47,6 @@ public class Consola {
             @Override
             public void onCommit(TextField campo) {
                 String mensaje = campo.getValue();
-                System.out.println("El chanta apreto enter.\nTexto enviado:\n" + mensaje);
                 padre.getCliente().getConexion().enviarChat(mensaje);
                 // Agregamos mensaje a la consola (?)
                 // consola.appendString(mensaje + "\n");

@@ -30,7 +30,7 @@ public class Usuario {
     protected int maxHambre;
     protected int minSed;
     protected int maxSed;
-    
+
     protected boolean paralizado;
     protected boolean navegando;
 
@@ -54,6 +54,11 @@ public class Usuario {
 
     public Usuario setPosicion(int x, int y) {
         this.posicion = new Posicion(x, y);
+        return this;
+    }
+
+    public Usuario setPosicion(Posicion posicion) {
+        this.posicion = new Posicion(posicion.x(), posicion.y());
         return this;
     }
 

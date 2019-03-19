@@ -16,6 +16,7 @@ import ar.net.argentum.cliente.motor.gamedata.AnimCuerpo;
 import ar.net.argentum.cliente.motor.gamedata.AnimEscudo;
 import ar.net.argentum.cliente.motor.gamedata.Baldosa;
 import ar.net.argentum.cliente.motor.gamedata.Posicion;
+import org.apache.log4j.Logger;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -26,6 +27,7 @@ import static org.lwjgl.glfw.GLFW.*;
  */
 public class MotorGrafico {
 
+    public static final Logger LOGGER = Logger.getLogger(MotorGrafico.class);
     public static final int TILE_PIXEL_WIDTH = 32;
     public static final int TILE_PIXEL_HEIGHT = 32;
 
@@ -300,15 +302,11 @@ public class MotorGrafico {
             game.getMapa().getBaldosa(X, Y).setCharindex(0);
             game.getMapa().getBaldosa(nX, nY).setCharindex(id_personaje);
         } catch (Exception ex) {
-            
+
         }
 
         personaje.setPosicion(nX, nY);
         personaje.setMovimiento(addX, addY, orientacion);
-
-        if (id_personaje == 1) {
-            game.getUsuario().setPosicion(nX, nY);
-        }
     }
 
     /**
@@ -613,7 +611,7 @@ public class MotorGrafico {
     }
 
     public void destruir() {
-        System.out.println("Destruyendo motor grafico...");
+        LOGGER.info("Destruyendo motor grafico...");
         this.surface.destruir();
     }
 
@@ -702,6 +700,7 @@ public class MotorGrafico {
 
         if (game.getMapa().isPosicionValida(nuevaPosicion) && !user.isParalizado()) {
             cliente.getConexion().enviarUsuarioCaminar(orientacion);
+            user.setPosicion(nuevaPosicion);
             personajeDarPaso(1, orientacion);
             moverPantalla(orientacion);
         } else {
@@ -709,6 +708,7 @@ public class MotorGrafico {
             cliente.getConexion().enviarUsuarioCambiarDireccion(orientacion);
         }
 
+        game.getUsuario().setPosicion(nuevaPosicion);
         personajesActualizarTodos();
     }
 
@@ -730,6 +730,10 @@ public class MotorGrafico {
                 new AnimEscudo(game.getEscudo(escudo)));
 
         personajes[id].setActivo(true);
+
+        // Actualizamos (?)
+        personajesActualizarTodos();
+
         return id;
     }
 

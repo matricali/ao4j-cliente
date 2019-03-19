@@ -26,6 +26,7 @@ import java.nio.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import org.apache.log4j.Logger;
 
 import org.lwjgl.opengl.GL;
 import org.lwjgl.nuklear.*;
@@ -51,6 +52,7 @@ public class GUI implements IInterfaz {
 
     private static final NkAllocator ALLOCATOR;
     private static final NkDrawVertexLayoutElement.Buffer VERTEX_LAYOUT;
+    private static final Logger LOGGER = Logger.getLogger(GUI.class.getName());
 
     static {
         ALLOCATOR = NkAllocator.create()
@@ -124,7 +126,7 @@ public class GUI implements IInterfaz {
 
     @Override
     public void mostrarMensaje(String mensaje, String titulo) {
-        System.out.println(titulo + " >> " + mensaje);
+        LOGGER.info(titulo + " >> " + mensaje);
         mensajes.add(new MessageBox(mensaje, titulo));
     }
 
@@ -136,7 +138,7 @@ public class GUI implements IInterfaz {
     @Override
     public void agregarMensajeConsola(String mensaje) {
         mensaje = ColoresChat.eliminarColores(mensaje);
-        System.out.println("CONSOLA>>"+mensaje);
+        LOGGER.info("CONSOLA>>"+mensaje);
         gui_consola.agregarTexto(mensaje);
     }
 

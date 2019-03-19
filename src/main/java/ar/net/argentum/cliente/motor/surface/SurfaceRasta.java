@@ -3,9 +3,11 @@ package ar.net.argentum.cliente.motor.surface;
 import ar.net.argentum.cliente.motor.gamedata.Sprite;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.log4j.Logger;
 
 public class SurfaceRasta implements ISurface {
 
+    private static final Logger LOGGER = Logger.getLogger(SurfaceRasta.class);
     protected HashMap<Integer, Textura> texturas;
 
     public SurfaceRasta() {
@@ -14,7 +16,7 @@ public class SurfaceRasta implements ISurface {
 
     @Override
     public void initialize() {
-        System.out.println("Inicializando un nuevo manejador de texturas...");
+        LOGGER.info("Inicializando un nuevo manejador de texturas...");
     }
 
     @Override
@@ -34,7 +36,7 @@ public class SurfaceRasta implements ISurface {
 
     @Override
     public Textura cargarTextura(int fileNum) {
-        System.out.println("Cargando nueva textura (" + fileNum + ".png)");
+        LOGGER.info("Cargando nueva textura (" + fileNum + ".png)");
         Textura tx = TexturaOpenGL.loadTexture("recursos/graficos/" + fileNum + ".png");
         texturas.put(fileNum, tx);
         return tx;
@@ -42,10 +44,10 @@ public class SurfaceRasta implements ISurface {
 
     @Override
     public void destruir() {
-        System.out.println("Destruyendo texturas...");
+        LOGGER.info("Destruyendo texturas...");
         for (Map.Entry<Integer, Textura> elemento : texturas.entrySet()) {
             Textura tx = elemento.getValue();
-            System.out.println("Destruyendo textura " + elemento.getKey());
+            LOGGER.info("Destruyendo textura " + elemento.getKey());
             tx.borrar();
         }
     }

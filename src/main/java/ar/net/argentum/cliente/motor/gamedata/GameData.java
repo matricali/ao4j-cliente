@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import org.apache.log4j.Logger;
 
 public class GameData {
 
+    private static final Logger LOGGER = Logger.getLogger(GameData.class);
     private static GameData instancia;
 
     private static int bigToLittle_Int(int bigendian) {
@@ -65,7 +67,7 @@ public class GameData {
 
     public int last_char = 0;
     private int cantidadGraficos;
-    
+
     protected Mapa mapa;
     protected Usuario usuario;
 
@@ -74,31 +76,31 @@ public class GameData {
     }
 
     public void initialize() {
-        System.out.println("Cargando y procesando archivos del juego...");
+        LOGGER.info("Cargando y procesando archivos del juego...");
 
-        System.out.println("Iniciando la carga de graficos...");
+        LOGGER.info("Iniciando la carga de graficos...");
         cargarGraficos("recursos/datos/graficos.ind");
-        System.out.println("Carga de graficos finalizada.");
+        LOGGER.info("Carga de graficos finalizada.");
 
-        System.out.println("Cargando animaciones de las cabezas...");
+        LOGGER.info("Cargando animaciones de las cabezas...");
         cargarCabezas("recursos/datos/cabezas.ind");
-        System.out.println("Carga de cabezas finalizada.");
+        LOGGER.info("Carga de cabezas finalizada.");
 
-        System.out.println("Cargando animaciones de los cascos...");
+        LOGGER.info("Cargando animaciones de los cascos...");
         cargarCascos("recursos/datos/cascos.ind");
-        System.out.println("Carga de cascos finalizada.");
+        LOGGER.info("Carga de cascos finalizada.");
 
-        System.out.println("Cargando animaciones de los cuerpos...");
+        LOGGER.info("Cargando animaciones de los cuerpos...");
         cargarCuerpos("recursos/datos/cuerpos.ind");
-        System.out.println("Carga de cuerpos finalizada.");
+        LOGGER.info("Carga de cuerpos finalizada.");
 
-        System.out.println("Cargando animaciones de las armas...");
+        LOGGER.info("Cargando animaciones de las armas...");
         cargarArmas("recursos/datos/armas.ind");
-        System.out.println("Carga de armas finalizada.");
+        LOGGER.info("Carga de armas finalizada.");
 
-        System.out.println("Cargando animaciones de los escudos...");
+        LOGGER.info("Cargando animaciones de los escudos...");
         cargarEscudos("recursos/datos/escudos.ind");
-        System.out.println("Carga de escudos finalizada.");
+        LOGGER.info("Carga de escudos finalizada.");
     }
 
     private void cargarGraficos(String archivo) {
@@ -124,7 +126,7 @@ public class GameData {
                     grh_data[Grh].numFrames = bigToLittle_Short(f.readShort());
 
                     if (grh_data[Grh].numFrames <= 0) {
-                        System.err.println("ERROR: El grafico " + Grh + " tiene una cantidad de cuadros invalida.");
+                        LOGGER.error("El grafico " + Grh + " tiene una cantidad de cuadros invalida.");
                         return;
                     }
 
@@ -134,65 +136,65 @@ public class GameData {
                         for (short frame = 1; frame <= grh_data[Grh].numFrames; frame++) {
                             grh_data[Grh].frames[frame] = bigToLittle_Int(f.readInt());
                             if (grh_data[Grh].frames[frame] <= 0) {
-                                System.err.println("ERROR: El grafico " + Grh + " tiene un cuadro invalido (" + frame + ").");
+                                LOGGER.error("El grafico " + Grh + " tiene un cuadro invalido (" + frame + ").");
                                 return;
                             }
                         }
 
                         tempfloat = bigToLittle_Float(f.readFloat());
                         if (tempfloat <= 0) {
-                            System.err.println("ERROR: Error al cargar grafico " + Grh + ".");
+                            LOGGER.error("Error al cargar grafico " + Grh + ".");
                             return;
                         }
                         grh_data[Grh].speed = tempfloat;
 
                         grh_data[Grh].pixelHeight = grh_data[grh_data[Grh].frames[1]].pixelHeight;
                         if (grh_data[Grh].pixelHeight <= 0) {
-                            System.err.println("ERROR: Grafico " + Grh + " - pixelHeight invalido.");
+                            LOGGER.error("Grafico " + Grh + " - pixelHeight invalido.");
                             return;
                         }
                         grh_data[Grh].pixelWidth = grh_data[grh_data[Grh].frames[1]].pixelWidth;
                         if (grh_data[Grh].pixelWidth <= 0) {
-                            System.err.println("ERROR: Grafico " + Grh + " - pixelWidth invalido.");
+                            LOGGER.error("Grafico " + Grh + " - pixelWidth invalido.");
                             return;
                         }
                         grh_data[Grh].tileWidth = grh_data[grh_data[Grh].frames[1]].tileWidth;
                         if (grh_data[Grh].tileWidth <= 0) {
-                            System.err.println("ERROR: Grafico " + Grh + " - tileWidth invalido.");
+                            LOGGER.error("Grafico " + Grh + " - tileWidth invalido.");
                             return;
                         }
                         grh_data[Grh].tileHeight = grh_data[grh_data[Grh].frames[1]].tileHeight;
                         if (grh_data[Grh].tileHeight <= 0) {
-                            System.err.println("ERROR: Grafico " + Grh + " - tileHeight invalido.");
+                            LOGGER.error("Grafico " + Grh + " - tileHeight invalido.");
                             return;
                         }
                     } else {
                         grh_data[Grh].fileNum = bigToLittle_Int(f.readInt());
                         if (grh_data[Grh].fileNum <= 0) {
-                            System.err.println("ERROR: Grafico " + Grh + " - fileNum invalido.");
+                            LOGGER.error("Grafico " + Grh + " - fileNum invalido.");
                             return;
                         }
                         grh_data[Grh].sX = bigToLittle_Short(f.readShort());
                         if (grh_data[Grh].sX < 0) {
-                            System.err.println("ERROR: Grafico " + Grh + " - sX invalido.");
+                            LOGGER.error("Grafico " + Grh + " - sX invalido.");
                             return;
                         }
 
                         grh_data[Grh].sY = bigToLittle_Short(f.readShort());
                         if (grh_data[Grh].sY < 0) {
-                            System.err.println("ERROR: Grafico " + Grh + " - sY invalido.");
+                            LOGGER.error("Grafico " + Grh + " - sY invalido.");
                             return;
                         }
 
                         grh_data[Grh].pixelWidth = bigToLittle_Short(f.readShort());
                         if (grh_data[Grh].pixelWidth <= 0) {
-                            System.err.println("ERROR: Grafico " + Grh + " - pixelWidth invalido.");
+                            LOGGER.error("Grafico " + Grh + " - pixelWidth invalido.");
                             return;
                         }
 
                         grh_data[Grh].pixelHeight = bigToLittle_Short(f.readShort());
                         if (grh_data[Grh].pixelHeight <= 0) {
-                            System.err.println("ERROR: Grafico " + Grh + " - pixelHeight invalido.");
+                            LOGGER.error("Grafico " + Grh + " - pixelHeight invalido.");
                             return;
                         }
 
@@ -204,7 +206,7 @@ public class GameData {
                 }
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.fatal(null, ex);
         }
     }
 
@@ -234,7 +236,7 @@ public class GameData {
                 }
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.fatal(null, ex);
         }
     }
 
@@ -264,7 +266,7 @@ public class GameData {
                 }
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.fatal(null, ex);
         }
     }
 
@@ -296,7 +298,7 @@ public class GameData {
                 }
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.fatal(null, ex);
         }
     }
 
@@ -319,7 +321,7 @@ public class GameData {
                 }
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.fatal(null, ex);
         }
     }
 
@@ -342,7 +344,7 @@ public class GameData {
                 }
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.fatal(null, ex);
         }
     }
 
