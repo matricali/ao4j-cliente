@@ -25,7 +25,8 @@ import ar.net.argentum.cliente.motor.gamedata.AnimArma;
 import ar.net.argentum.cliente.motor.user.Orientacion;
 
 /**
- * Representa un personaje en el mundo
+ * Representa un personaje animado que posee cuerpo y cabeza y puede portar una
+ * vestimenta, un arma, un escudo y casco
  *
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */
