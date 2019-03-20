@@ -26,13 +26,6 @@ import ar.net.argentum.cliente.motor.surface.ISurface;
  */
 public interface IInterfaz {
 
-//    public static void mostrarMensaje(String mensaje, String titulo);
-//
-//    public static void mostrarMensaje(String mensaje);
-//
-//    public static void agregarMensajeConsola(String mensaje);
-//
-//    public static void mostrarPanel(String nombre);
     public Pantallas getPantalla();
 
     public void setPantalla(Pantallas pantalla);
@@ -42,6 +35,8 @@ public interface IInterfaz {
     public void terminar();
 
     public void keyEvents(long window, int key, int scancode, int action, int mods);
+
+    public void mouseEvents(long window, int x, int y, int button, int action, int mods);
 
     public GameData getJuego();
 
