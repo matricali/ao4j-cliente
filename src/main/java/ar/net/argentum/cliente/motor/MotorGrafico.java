@@ -195,6 +195,7 @@ public class MotorGrafico {
 
     private void dibujarSiguienteCuadro() {
         final Usuario user = game.getUsuario();
+
         if (userMoving) {
             if (0 != AddToUserPos.x()) {
                 offsetCounterX = offsetCounterX - scrollPixelsPerFrameX * AddToUserPos.x() * timerTicksPerFrame;

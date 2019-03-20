@@ -175,6 +175,9 @@ public class Cliente implements ClienteArgentum {
 
         // Cerramos la conexion
         if (conexion != null) {
+            if (jugando) {
+                conexion.enviarDesconectar();
+            }
             conexion.detener();
         }
 

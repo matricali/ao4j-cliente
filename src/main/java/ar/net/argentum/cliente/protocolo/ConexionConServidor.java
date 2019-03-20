@@ -199,7 +199,7 @@ public class ConexionConServidor extends Thread {
                     recibirPersonajeQuitar(dis);
 
                 default:
-                    LOGGER.fatal("Recibimos un paquete que no supimos manejar ("+tipoPaquete+")");
+                    LOGGER.fatal("Recibimos un paquete que no supimos manejar (" + tipoPaquete + ")");
                     terminar();
             }
         } catch (IOException ex) {
@@ -208,10 +208,19 @@ public class ConexionConServidor extends Thread {
     }
 
     public void enviarChat(String mensaje) {
-        LOGGER.info("PQT_CHAT>>"+mensaje);
+        LOGGER.info("PQT_CHAT>>" + mensaje);
         try {
             dos.writeByte(PQT_CHAT); // CHAT
             dos.writeUTF(mensaje);
+        } catch (IOException ex) {
+            LOGGER.fatal(null, ex);
+        }
+    }
+
+    public void enviarDesconectar() {
+        LOGGER.info("PQT_DESCONECTAR>>");
+        try {
+            dos.writeByte(PQT_DESCONECTAR); // CHAT
         } catch (IOException ex) {
             LOGGER.fatal(null, ex);
         }
@@ -270,6 +279,9 @@ public class ConexionConServidor extends Thread {
         try {
             int numMapa = dis.readInt();
             cliente.getJuego().cargarMapa(numMapa);
+            if (!cliente.isJugando()) {
+                cliente.setJugando(true);
+            }
         } catch (IOException ex) {
             LOGGER.fatal(null, ex);
         }
@@ -278,6 +290,7 @@ public class ConexionConServidor extends Thread {
     public void recibirUsuarioNombre(DataInputStream dis) {
         try {
             cliente.getJuego().getUsuario().setNombre(dis.readUTF());
+
         } catch (IOException ex) {
             LOGGER.fatal(null, ex);
         }
@@ -295,10 +308,9 @@ public class ConexionConServidor extends Thread {
             Usuario usuario = cliente.getJuego().getUsuario();
             usuario.setPosicion(x, y);
 
-            if (!cliente.isJugando()) {
-                //cliente.getMotorGrafico().crearPersonaje(1, usuario.getNombre(), x, y, orientacion, 1, 128, 1, 1, 1);
-                cliente.setJugando(true);
-            }
+            cliente.getMotorGrafico().getPersonaje(1).setActivo(true);
+            cliente.getMotorGrafico().getPersonaje(1).setPosicion(x, y);
+
         } catch (IOException ex) {
             LOGGER.fatal(null, ex);
         }
@@ -415,7 +427,7 @@ public class ConexionConServidor extends Thread {
     }
 
     public void enviarUsuarioCaminar(Orientacion orientacion) {
-        LOGGER.info("PQT_USUARIO_CAMINAR>>"+orientacion.valor());
+        LOGGER.info("PQT_USUARIO_CAMINAR>>" + orientacion.valor());
         try {
             dos.writeByte(PQT_USUARIO_CAMINAR);
             dos.writeByte(orientacion.valor());
@@ -425,7 +437,7 @@ public class ConexionConServidor extends Thread {
     }
 
     public void enviarUsuarioCambiarDireccion(Orientacion orientacion) {
-        LOGGER.info("PQT_USUARIO_CAMBIAR_DIRECCION>>"+orientacion.valor());
+        LOGGER.info("PQT_USUARIO_CAMBIAR_DIRECCION>>" + orientacion.valor());
         try {
             dos.writeByte(PQT_USUARIO_CAMBIAR_DIRECCION);
             dos.writeByte(orientacion.valor());
