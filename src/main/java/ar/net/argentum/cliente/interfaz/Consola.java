@@ -34,12 +34,6 @@ public class Consola {
     protected final TextField consola;
     protected final TextField mensaje;
 
-    NkColorf background = NkColorf.create()
-            .r(0.10f)
-            .g(0.18f)
-            .b(0.24f)
-            .a(0.0f);
-
     public Consola(IInterfaz padre) {
         this.padre = padre;
         this.consola = new TextField(2048, true);

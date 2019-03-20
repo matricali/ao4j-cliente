@@ -138,7 +138,7 @@ public class GUI implements IInterfaz {
     @Override
     public void agregarMensajeConsola(String mensaje) {
         mensaje = ColoresChat.eliminarColores(mensaje);
-        LOGGER.info("CONSOLA>>"+mensaje);
+        LOGGER.info("CONSOLA>>" + mensaje);
         gui_consola.agregarTexto(mensaje);
     }
 
@@ -177,6 +177,17 @@ public class GUI implements IInterfaz {
                 }));
 
         setupContext();
+
+        NkColor fondo = NkColor.create()
+                .r((byte) 0x00)
+                .g((byte) 0x00)
+                .b((byte) 0x00)
+                .a((byte) 0x20);
+        
+        ctx.style().window().fixed_background().data().color(fondo);
+        ctx.style().edit().normal().data().color(fondo);
+        ctx.style().window().border(0);
+
         return ctx;
     }
 
