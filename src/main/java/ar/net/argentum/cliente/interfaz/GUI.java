@@ -153,30 +153,6 @@ public class GUI implements IInterfaz {
         });
         glfwSetCharCallback(win, (window, codepoint) -> nk_input_unicode(ctx, codepoint));
         glfwSetCursorPosCallback(win, (window, xpos, ypos) -> nk_input_motion(ctx, (int) xpos, (int) ypos));
-        glfwSetMouseButtonCallback(win, (window, button, action, mods) -> {
-            try (MemoryStack stack = stackPush()) {
-                DoubleBuffer cx = stack.mallocDouble(1);
-                DoubleBuffer cy = stack.mallocDouble(1);
-
-                glfwGetCursorPos(window, cx, cy);
-
-                int x = (int) cx.get(0);
-                int y = (int) cy.get(0);
-
-                int nkButton;
-                switch (button) {
-                    case GLFW_MOUSE_BUTTON_RIGHT:
-                        nkButton = NK_BUTTON_RIGHT;
-                        break;
-                    case GLFW_MOUSE_BUTTON_MIDDLE:
-                        nkButton = NK_BUTTON_MIDDLE;
-                        break;
-                    default:
-                        nkButton = NK_BUTTON_LEFT;
-                }
-                nk_input_button(ctx, nkButton, x, y, action == GLFW_PRESS);
-            }
-        });
 
         nk_init(ctx, ALLOCATOR, null);
         ctx.clip(it -> it
@@ -353,7 +329,7 @@ public class GUI implements IInterfaz {
             gui_personaje.layout(ctx, 559, 15);
             gui_inventario.layout(ctx, 559, 195);
         }
-        
+
         // Dibujamos los mensajes emergentes
         for (MessageBox msg : mensajes) {
             if (msg != null) {
@@ -683,5 +659,22 @@ public class GUI implements IInterfaz {
     @Override
     public ClienteArgentum getCliente() {
         return cliente;
+    }
+
+    @Override
+    public void mouseEvents(long window, int y, int x, int button, int action, int mods) {
+        // Mapeamos los valores de GLFW a Nuklear
+        int nkButton;
+        switch (button) {
+            case GLFW_MOUSE_BUTTON_RIGHT:
+                nkButton = NK_BUTTON_RIGHT;
+                break;
+            case GLFW_MOUSE_BUTTON_MIDDLE:
+                nkButton = NK_BUTTON_MIDDLE;
+                break;
+            default:
+                nkButton = NK_BUTTON_LEFT;
+        }
+        nk_input_button(ctx, nkButton, x, y, action == GLFW_PRESS);
     }
 }

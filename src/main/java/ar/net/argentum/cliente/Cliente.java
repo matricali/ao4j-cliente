@@ -21,6 +21,7 @@ import ar.net.argentum.cliente.motor.MotorGrafico;
 import ar.net.argentum.cliente.motor.gamedata.GameData;
 import ar.net.argentum.cliente.protocolo.ConexionConServidor;
 import java.io.IOException;
+import java.nio.DoubleBuffer;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
@@ -71,6 +72,7 @@ public class Cliente implements ClienteArgentum {
 
     private boolean jugando = false;
     private long window;
+    private GLFWMouseButtonCallback mouseCallback;
 
     /**
      * Cliente de Argentum Online
@@ -129,30 +131,30 @@ public class Cliente implements ClienteArgentum {
                 }
 
                 motor.keyEvents(window, key, scancode, action, mods);
-//                interfaz.keyEvents(window, key, scancode, action, mods);
             }
         };
 
-        glfwSetKeyCallback(window, keyCallback);
+        this.mouseCallback = new GLFWMouseButtonCallback() {
+            @Override
+            public void invoke(long window, int button, int action, int mods) {
+                try (MemoryStack stack = MemoryStack.stackPush()) {
+                    DoubleBuffer cx = stack.mallocDouble(1);
+                    DoubleBuffer cy = stack.mallocDouble(1);
 
-//        // Get the thread stack and push a new frame
-//        try (MemoryStack stack = MemoryStack.stackPush()) {
-//            IntBuffer pWidth = stack.mallocInt(1); // int*
-//            IntBuffer pHeight = stack.mallocInt(1); // int*
-//
-//            // Get the window size passed to glfwCreateWindow
-//            glfwGetWindowSize(window, pWidth, pHeight);
-//
-//            // Get the resolution of the primary monitor
-//            GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-//
-//            // Center the window
-//            glfwSetWindowPos(
-//                    window,
-//                    (vidmode.width() - pWidth.get(0)) / 2,
-//                    (vidmode.height() - pHeight.get(0)) / 2
-//            );
-//        } // the stack frame is popped automatically
+                    glfwGetCursorPos(window, cx, cy);
+
+                    int x = (int) cx.get(0);
+                    int y = (int) cy.get(0);
+
+                    motor.mouseEvents(window, x, y, button, action, mods);
+                }
+            }
+
+        };
+
+        glfwSetKeyCallback(window, keyCallback);
+        glfwSetMouseButtonCallback(window, mouseCallback);
+
         // Mostramos la ventana
         glfwShowWindow(window);
 
@@ -161,17 +163,9 @@ public class Cliente implements ClienteArgentum {
         // Iniciamos la carga de los datos del juego
         game.initialize();
 
-//        // Agregamos un evento al cerrar la ventana
-//        ventana.addWindowListener(new WindowAdapter() {
-//            public void windowClosing(WindowEvent e) {
-//                if (conexion != null) {
-//                    conexion.terminar();
-//                }
-//            }
-//        });
         // Iniciamos el motor grafico
         this.motor = new MotorGrafico(this, window, game);
-        motor.iniciar();
+        motor.iniciar(800, 600, 15, 169, 544, 416);
 
         // Cerramos la conexion
         if (conexion != null) {
@@ -183,10 +177,13 @@ public class Cliente implements ClienteArgentum {
 
         // Liberamos la ventana y los callbacks
         glfwDestroyWindow(window);
+
         keyCallback.free();
+        mouseCallback.free();
 
         // Terminamos GLFW y liberamos el callback de error
         glfwTerminate();
+
         errorCallback.free();
     }
 

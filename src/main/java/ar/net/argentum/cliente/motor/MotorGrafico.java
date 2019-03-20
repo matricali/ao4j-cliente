@@ -49,10 +49,15 @@ public class MotorGrafico {
     /**
      * Cuantos tiles de distancia del personaje queremos dibujar
      */
-    final int tileBufferSize = 15; //9;
-
-    final int halfWindowTileWidth = 8;
-    final int halfWindowTileHeight = 6;
+    protected int tileBufferSize;
+    protected int viewportX;
+    protected int viewportY;
+    protected int viewportAncho;
+    protected int viewportAlto;
+    protected int anchoEnBaldosas;
+    protected int altoEnBaldosas;
+    protected int halfWindowTileWidth;
+    protected int halfWindowTileHeight;
 
     final int scrollPixelsPerFrameX = 8;
     final int scrollPixelsPerFrameY = 8;
@@ -88,10 +93,20 @@ public class MotorGrafico {
         this.ambientcolor = new Color(1.0f, 1.0f, 1.0f);
     }
 
-    public void iniciar() {
+    public void iniciar(int anchoVentana, int altoVentana, int viewportX, int viewportY, int viewportAncho, int viewportAlto) {
+
+        this.viewportX = viewportX;
+        this.viewportY = viewportY;
+        this.viewportAlto = viewportAlto;
+        this.viewportAncho = viewportAncho;
+        this.anchoEnBaldosas = viewportAncho / TILE_PIXEL_WIDTH;
+        this.altoEnBaldosas = viewportAlto / TILE_PIXEL_HEIGHT;
+        this.halfWindowTileWidth = anchoEnBaldosas / 2;
+        this.halfWindowTileHeight = altoEnBaldosas / 2;
+        this.tileBufferSize = 2 + (halfWindowTileWidth > halfWindowTileHeight ? halfWindowTileWidth : halfWindowTileHeight);
 
         // Creamos la instancia del renderizador
-        this.render = new RenderizadorOpenGL32(ventana, surface, 800, 600, 15, 169, 544, 416);
+        this.render = new RenderizadorOpenGL32(ventana, surface, anchoVentana, altoVentana, viewportX, viewportY, viewportAncho, viewportAlto);
 
         // Lo configuramos
         render.iniciar();
@@ -104,29 +119,6 @@ public class MotorGrafico {
             personajes[i].setActivo(false);
         }
 
-//        // Cargamos el mapa
-//        game.cargarMapa(4);
-//
-//        // Creamos un usuario fake
-//        Usuario user = game.getUsuario();
-//
-//        // Posicion del usuario fake
-//        int x = 50;
-//        int y = 40;
-//        game.getBaldosa(x, y).setCharindex((short) crearPersonaje(1, 124, Orientacion.SUR, x, y));
-//        game.getBaldosa(x-1, y-3).setCharindex((short) crearPersonaje(2, 128, Orientacion.SUR, x-1, y-3));
-//
-//        Objeto obj1 = new Objeto(1, 508, "Horquilla", 1);
-//        Objeto obj2 = new Objeto(2, 520, "TEST", 20);
-//        game.getBaldosa(x + 2, y + 2).setObjeto(obj1);
-//
-//        personajesActualizarTodos();
-//        user.setPosicion(x, y);
-//        user.setNombre("R4ST4");
-//        user.setMinHP(50);
-//        user.setMaxHP(120);
-//        user.getInventario().setSlot(1, obj1);
-//        user.getInventario().setSlot(7, obj2);
         this.corriendo = true;
         cliente.setJugando(false);
 
@@ -303,7 +295,7 @@ public class MotorGrafico {
             game.getMapa().getBaldosa(X, Y).setCharindex(0);
             game.getMapa().getBaldosa(nX, nY).setCharindex(id_personaje);
         } catch (Exception ex) {
-
+            LOGGER.error(null, ex);
         }
 
         personaje.setPosicion(nX, nY);
@@ -660,6 +652,32 @@ public class MotorGrafico {
         interfaz.keyEvents(window, key, scancode, action, mods);
     }
 
+    /**
+     * Procesamos eventos del mouse
+     *
+     * @param window
+     * @param x
+     * @param y
+     * @param button
+     * @param action
+     * @param mods
+     */
+    public void mouseEvents(long window, int x, int y, int button, int action, int mods) {
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+            // Verificamos que el click esta dentro del area de dibujo del juego
+            if (x > viewportX && x < viewportX + viewportAncho && y > viewportY && y < viewportY + viewportAncho) {
+                // Convertimos la posicion del mouse en coordenadas del juego
+                int cX = x - viewportX;
+                int cY = y - viewportY;
+                int tX = game.getUsuario().getPosicion().x() + cX / TILE_PIXEL_WIDTH - anchoEnBaldosas / 2;
+                int tY = game.getUsuario().getPosicion().y() + cY / TILE_PIXEL_HEIGHT - altoEnBaldosas / 2;
+                cliente.getConexion().enviarClick(tX, tY);
+
+            }
+        }
+        interfaz.mouseEvents(window, x, y, button, action, mods);
+    }
+
     private Posicion calcularPaso(Posicion posicion, Orientacion orientacion) {
         return calcularPaso(posicion.x(), posicion.y(), orientacion);
     }
@@ -700,16 +718,14 @@ public class MotorGrafico {
         }
 
         if (game.getMapa().isPosicionValida(nuevaPosicion) && !user.isParalizado()) {
-            cliente.getConexion().enviarUsuarioCaminar(orientacion);
-            user.setPosicion(nuevaPosicion);
             personajeDarPaso(1, orientacion);
             moverPantalla(orientacion);
+            cliente.getConexion().enviarUsuarioCaminar(orientacion);
         } else {
             personajes[1].setOrientacion(orientacion);
             cliente.getConexion().enviarUsuarioCambiarDireccion(orientacion);
         }
 
-        game.getUsuario().setPosicion(nuevaPosicion);
         personajesActualizarTodos();
     }
 
@@ -722,7 +738,7 @@ public class MotorGrafico {
         }
         personajes[id] = new Personaje(
                 nombre,
-                Orientacion.SUR,
+                orientacion,
                 new Posicion(x, y),
                 new AnimCabeza(game.getCabeza(cabeza)),
                 new AnimCuerpo(game.getCuerpo(cuerpo)),
@@ -731,10 +747,6 @@ public class MotorGrafico {
                 new AnimEscudo(game.getEscudo(escudo)));
 
         personajes[id].setActivo(true);
-
-        // Actualizamos (?)
-        personajesActualizarTodos();
-
         return id;
     }
 

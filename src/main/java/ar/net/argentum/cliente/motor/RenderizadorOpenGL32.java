@@ -105,7 +105,7 @@ public class RenderizadorOpenGL32 implements Renderizador {
         GL32C.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         GL32C.glEnable(GL_ALPHA);
         GL32C.glEnable(GL_SCISSOR_TEST);
-        GL32C.glScissor(15, 15, ancho - 15, alto - 15);
+        GL32C.glScissor(x, altoVentana - alto - y, ancho, alto);
     }
 
     @Override
