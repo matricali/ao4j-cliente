@@ -39,8 +39,6 @@ import org.apache.log4j.Logger;
  */
 public class ConexionConServidor extends Thread {
 
-    private final ClienteArgentum cliente;
-
     protected static final byte PQT_DESCONECTAR = 0x1;
     protected static final byte PQT_INICIAR_SESION = 0x2;
     protected static final byte PQT_CHAT = 0x3;
@@ -60,6 +58,7 @@ public class ConexionConServidor extends Thread {
     protected static final byte PQT_PERSONAJE_QUITAR = 0x16;
 
     protected static final Logger LOGGER = Logger.getLogger(ConexionConServidor.class.getName());
+    private final ClienteArgentum cliente;
 
     protected Socket socket;
     protected DataInputStream dis;
@@ -303,12 +302,23 @@ public class ConexionConServidor extends Thread {
             int y = dis.readInt();
             int heading = dis.readInt();
 
+            LOGGER.debug("PQT_USUARIO_POSICION<<"
+                    + numMapa + "<<" + x + "<<" + y + "<<" + heading);
+
             Orientacion orientacion = Orientacion.valueOf(heading);
-
             Usuario usuario = cliente.getJuego().getUsuario();
-            usuario.setPosicion(x, y);
 
-            cliente.getMotorGrafico().getPersonaje(1).setActivo(true);
+            Baldosa antiguaBaldosa = cliente.getJuego().getMapa().getBaldosa(usuario.getPosicion());
+            if (antiguaBaldosa != null) {
+                if (antiguaBaldosa.getCharindex() == 1) {
+                    antiguaBaldosa.setCharindex(0);
+                }
+            }
+
+            usuario.setPosicion(x, y);
+            Baldosa nuevaBaldosa = cliente.getJuego().getMapa().getBaldosa(x, y);
+            nuevaBaldosa.setCharindex(1);
+
             cliente.getMotorGrafico().getPersonaje(1).setPosicion(x, y);
 
         } catch (IOException ex) {
@@ -365,14 +375,16 @@ public class ConexionConServidor extends Thread {
             int escudo = dis.readInt();
             int casco = dis.readInt();
 
-            LOGGER.info("PQT_PERSONAJE_CREAR>>" + charindex
-                    + ">>" + heading + ">>" + x + ">>" + y + ">>" + cuerpo
-                    + ">>" + cabeza + ">>" + arma + ">>" + escudo + ">>" + casco);
+            LOGGER.debug("PQT_PERSONAJE_CREAR<<" + charindex
+                    + "<<" + heading + "<<" + x + "<<" + y + "<<" + cuerpo
+                    + "<<" + cabeza + "<<" + arma + "<<" + escudo + "<<" + casco);
 
             cliente.getMotorGrafico().crearPersonaje(
                     charindex,
                     "", x, y, Orientacion.valueOf(heading),
                     cabeza, cuerpo, casco, arma, escudo);
+
+            cliente.getJuego().getMapa().getBaldosa(x, y).setCharindex(charindex);
         } catch (IOException ex) {
             LOGGER.fatal(null, ex);
         }
@@ -388,9 +400,9 @@ public class ConexionConServidor extends Thread {
             int escudo = dis.readInt();
             int casco = dis.readInt();
 
-            LOGGER.info("PQT_PERSONAJE_CAMBIAR>>" + charindex
-                    + ">>" + heading + ">>" + cuerpo + ">>" + cabeza
-                    + ">>" + arma + ">>" + escudo + ">>" + casco);
+            LOGGER.debug("PQT_PERSONAJE_CAMBIAR<<" + charindex
+                    + "<<" + heading + "<<" + cuerpo + "<<" + cabeza
+                    + "<<" + arma + "<<" + escudo + "<<" + casco);
 
             Personaje personaje = cliente.getMotorGrafico().getPersonaje(charindex);
             personaje.setOrientacion(Orientacion.valueOf(heading));
@@ -404,7 +416,7 @@ public class ConexionConServidor extends Thread {
         try {
             int charindex = dis.readInt();
 
-            LOGGER.info("PQT_PERSONAJE_QUITAR>>" + charindex);
+            LOGGER.debug("PQT_PERSONAJE_QUITAR<<" + charindex);
 
             cliente.getMotorGrafico().getPersonaje(charindex).setActivo(false);
         } catch (IOException ex) {
@@ -417,8 +429,8 @@ public class ConexionConServidor extends Thread {
             int charindex = dis.readInt();
             int heading = dis.readInt();
 
-            LOGGER.info("PQT_PERSONAJE_CAMINAR>>" + charindex
-                    + ">>" + heading);
+            LOGGER.debug("PQT_PERSONAJE_CAMINAR<<" + charindex
+                    + "<<" + heading);
 
             cliente.getMotorGrafico().personajeDarPaso(charindex, Orientacion.valueOf(heading));
         } catch (IOException ex) {
@@ -427,7 +439,7 @@ public class ConexionConServidor extends Thread {
     }
 
     public void enviarUsuarioCaminar(Orientacion orientacion) {
-        LOGGER.info("PQT_USUARIO_CAMINAR>>" + orientacion.valor());
+        LOGGER.debug("PQT_USUARIO_CAMINAR>>" + orientacion.valor());
         try {
             dos.writeByte(PQT_USUARIO_CAMINAR);
             dos.writeByte(orientacion.valor());
@@ -437,7 +449,7 @@ public class ConexionConServidor extends Thread {
     }
 
     public void enviarUsuarioCambiarDireccion(Orientacion orientacion) {
-        LOGGER.info("PQT_USUARIO_CAMBIAR_DIRECCION>>" + orientacion.valor());
+        LOGGER.debug("PQT_USUARIO_CAMBIAR_DIRECCION>>" + orientacion.valor());
         try {
             dos.writeByte(PQT_USUARIO_CAMBIAR_DIRECCION);
             dos.writeByte(orientacion.valor());
