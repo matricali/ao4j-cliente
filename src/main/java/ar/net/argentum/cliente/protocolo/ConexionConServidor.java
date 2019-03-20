@@ -56,6 +56,7 @@ public class ConexionConServidor extends Thread {
     protected static final byte PQT_PERSONAJE_CAMINAR = 0x14;
     protected static final byte PQT_PERSONAJE_ANIMACION = 0x15;
     protected static final byte PQT_PERSONAJE_QUITAR = 0x16;
+    protected static final byte PQT_CLICK = 0x17;
 
     protected static final Logger LOGGER = Logger.getLogger(ConexionConServidor.class.getName());
     private final ClienteArgentum cliente;
@@ -211,6 +212,17 @@ public class ConexionConServidor extends Thread {
         try {
             dos.writeByte(PQT_CHAT); // CHAT
             dos.writeUTF(mensaje);
+        } catch (IOException ex) {
+            LOGGER.fatal(null, ex);
+        }
+    }
+
+    public void enviarClick(int x, int y) {
+        LOGGER.debug("PQT_CLICK>>" + x + ">>" + y);
+        try {
+            dos.writeByte(PQT_CLICK); // CHAT
+            dos.writeInt(x);
+            dos.writeInt(y);
         } catch (IOException ex) {
             LOGGER.fatal(null, ex);
         }
