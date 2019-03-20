@@ -293,7 +293,7 @@ public class GameData {
                     off2 = bigToLittle_Short(f.readShort());
 
                     if (a1 != 0) {
-                        d_cuerpos[i] = new AnimCuerpo(grh_data[a1], a1, a2, a3, a4, i, i, false);
+                        d_cuerpos[i] = new AnimCuerpo(grh_data[a1], a1, a2, a3, a4, off1, off2, false);
                     }
                 }
             }
