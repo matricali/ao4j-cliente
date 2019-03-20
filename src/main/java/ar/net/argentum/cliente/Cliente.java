@@ -74,6 +74,9 @@ public class Cliente implements ClienteArgentum {
     private long window;
     private GLFWMouseButtonCallback mouseCallback;
 
+    private int ancho = 800;
+    private int alto = 600;
+
     /**
      * Cliente de Argentum Online
      *
@@ -105,8 +108,8 @@ public class Cliente implements ClienteArgentum {
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 
         // Creamos la ventana
-        // this.window = glfwCreateWindow(800, 600, "Argentum Online", glfwGetPrimaryMonitor(), NULL);
-        this.window = glfwCreateWindow(800, 600, "Argentum Online", NULL, NULL);
+        // this.window = glfwCreateWindow(ancho, alto, "Argentum Online", glfwGetPrimaryMonitor(), NULL);
+        this.window = glfwCreateWindow(ancho, alto, "Argentum Online", NULL, NULL);
 
         if (window == NULL) {
             glfwTerminate();
