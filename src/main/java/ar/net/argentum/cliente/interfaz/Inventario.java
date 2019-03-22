@@ -16,8 +16,10 @@
  */
 package ar.net.argentum.cliente.interfaz;
 
-import ar.net.argentum.cliente.motor.surface.Textura;
-import ar.net.argentum.cliente.motor.user.InventarioSlot;
+import ar.net.argentum.cliente.motor.IInterfaz;
+import ar.net.argentum.cliente.Recursos;
+import ar.net.argentum.cliente.motor.texturas.Textura;
+import ar.net.argentum.cliente.juego.InventarioSlot;
 import org.lwjgl.nuklear.*;
 import org.lwjgl.system.*;
 import static org.lwjgl.nuklear.Nuklear.*;
@@ -62,7 +64,7 @@ public class Inventario {
                 GL32C.glEnable(GL32C.GL_BLEND);
                 for (InventarioSlot obj : padre.getJuego().getUsuario().getInventario().getObjetos()) {
 
-                    final Textura tex = padre.getTexturas().getTextura(padre.getJuego().getSprite(obj != null ? obj.getGrhIndex() : 0));
+                    final Textura tex = padre.getTexturas().getTextura(Recursos.getSprite(obj != null ? obj.getGrhIndex() : 0));
                     final int textID = tex.getId();
                     final String strCantidad = obj == null ? "" : String.valueOf(obj.getCantidad());
 

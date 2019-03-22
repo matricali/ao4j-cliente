@@ -1,8 +1,9 @@
-package ar.net.argentum.cliente.motor.user;
+package ar.net.argentum.cliente.juego;
 
-import ar.net.argentum.cliente.motor.gamedata.GameData;
-import ar.net.argentum.cliente.motor.gamedata.Animacion;
-import ar.net.argentum.cliente.motor.gamedata.Posicion;
+import ar.net.argentum.cliente.juego.Inventario;
+import ar.net.argentum.cliente.Juego;
+import ar.net.argentum.cliente.motor.Animacion;
+import ar.net.argentum.cliente.mundo.Posicion;
 
 /**
  * Representa al usuario que esta jugando en esta sesion
@@ -14,7 +15,7 @@ public class Usuario {
     /**
      * Intancia del juego
      */
-    protected final GameData game;
+    protected final Juego game;
 
     protected String nombre;
     protected Posicion posicion = new Posicion();
@@ -34,11 +35,11 @@ public class Usuario {
     protected boolean paralizado;
     protected boolean navegando;
 
-    public Usuario(GameData game) {
+    public Usuario(Juego game) {
         this(game, "");
     }
 
-    public Usuario(GameData game, String nombre) {
+    public Usuario(Juego game, String nombre) {
         this.game = game;
         this.nombre = nombre;
         this.inventario = new Inventario(20);

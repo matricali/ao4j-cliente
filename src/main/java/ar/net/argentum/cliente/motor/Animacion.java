@@ -14,7 +14,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ar.net.argentum.cliente.motor.gamedata;
+package ar.net.argentum.cliente.motor;
+
+import ar.net.argentum.cliente.Recursos;
 
 /**
  *
@@ -28,9 +30,9 @@ public class Animacion {
     private boolean started;
     private int repeticiones;
     private final float angulo;
-    
+
     public Animacion(short grhindex, boolean iniciado) {
-        this(grhindex, GameData.getInstancia().getSprite(grhindex), iniciado);
+        this(grhindex, Recursos.getSprite(grhindex), iniciado);
     }
 
     public Animacion(short grhindex, Sprite sprite, boolean iniciado) {
@@ -90,37 +92,11 @@ public class Animacion {
     }
 
     public boolean esValido() {
-//        if (grhIndex < 2) {
-//            System.err.println("Grafico no valido! "+grhIndex);
-//        }
         return grhIndex > 1;
     }
 
-//    public Animacion inicializar(short grhindex, Sprite sprite, boolean iniciado) {
-//        this.grhIndex = grhindex;
-//
-//        if (iniciado) {
-//            this.started = sprite.numFrames > 1;
-//        } else {
-//            if (sprite.numFrames == 1) {
-//                iniciado = false;
-//            }
-//            this.started = iniciado;
-//        }
-//
-//        if (this.started) {
-//            this.repeticiones = -1;
-//        } else {
-//            this.repeticiones = 0;
-//        }
-//
-//        this.frameCounter = 1;
-//        this.velocidad = sprite.speed;
-//
-//        return this;
-//    }
     public Sprite getSprite() {
-        return GameData.getInstancia().getSprite(grhIndex);
+        return Recursos.getSprite(grhIndex);
     }
 
     public void animar(long timerElapsedTime) {
@@ -139,7 +115,7 @@ public class Animacion {
 
     public Sprite getCuadroActual() {
         int currentGrhIndex = getSprite().frames[(int) (frameCounter)];
-        return GameData.getInstancia().getSprite(currentGrhIndex);
+        return Recursos.getSprite(currentGrhIndex);
     }
 
     /**
@@ -148,7 +124,7 @@ public class Animacion {
     public float getVelocidad() {
         return velocidad;
     }
-    
+
     public void reiniciar() {
         this.started = false;
         this.frameCounter = 1;

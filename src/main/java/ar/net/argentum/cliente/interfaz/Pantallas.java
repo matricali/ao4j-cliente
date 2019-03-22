@@ -17,6 +17,7 @@
 package ar.net.argentum.cliente.interfaz;
 
 /**
+ * Enumerador que contiene los estados o "pantallas" del juego
  *
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */

@@ -16,8 +16,6 @@
  */
 package ar.net.argentum.cliente.motor;
 
-import ar.net.argentum.cliente.motor.gamedata.Sprite;
-
 /**
  *
  * @author Jorge Matricali <jorgematricali@gmail.com>

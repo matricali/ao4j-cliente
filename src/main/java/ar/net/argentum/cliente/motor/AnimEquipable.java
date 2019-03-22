@@ -14,9 +14,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ar.net.argentum.cliente.motor.gamedata;
+package ar.net.argentum.cliente.motor;
 
-import ar.net.argentum.cliente.motor.user.Orientacion;
+import ar.net.argentum.cliente.mundo.Orientacion;
 
 /**
  * Almacena un cuerpo que puede ser vestido por un {@link Personaje}
@@ -50,7 +50,7 @@ public abstract class AnimEquipable {
         this.animaciones[3] = new Animacion(original.animaciones[3]);
         this.animaciones[4] = new Animacion(original.animaciones[4]);
     }
-    
+
     public Animacion getAnimacion(Orientacion orientacion) {
         return animaciones[orientacion.valor()];
     }

@@ -14,11 +14,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ar.net.argentum.cliente.interfaz;
+package ar.net.argentum.cliente.motor;
 
 import ar.net.argentum.cliente.ClienteArgentum;
-import ar.net.argentum.cliente.motor.gamedata.GameData;
-import ar.net.argentum.cliente.motor.surface.ISurface;
+import ar.net.argentum.cliente.Juego;
+import ar.net.argentum.cliente.interfaz.Pantallas;
+import ar.net.argentum.cliente.motor.texturas.ITexturas;
 
 /**
  *
@@ -34,13 +35,13 @@ public interface IInterfaz {
 
     public void terminar();
 
-    public void keyEvents(long window, int key, int scancode, int action, int mods);
+    public void entradaTeclado(long window, int key, int scancode, int action, int mods);
 
     public void mouseEvents(long window, int x, int y, int button, int action, int mods);
 
-    public GameData getJuego();
+    public Juego getJuego();
 
-    public ISurface getTexturas();
+    public ITexturas getTexturas();
 
     public ClienteArgentum getCliente();
 

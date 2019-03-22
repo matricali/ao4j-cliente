@@ -18,12 +18,12 @@ package ar.net.argentum.cliente.protocolo;
 
 import ar.net.argentum.cliente.ClienteArgentum;
 import ar.net.argentum.cliente.interfaz.Pantallas;
+import ar.net.argentum.cliente.motor.Animacion;
 import ar.net.argentum.cliente.motor.Personaje;
-import ar.net.argentum.cliente.motor.gamedata.Animacion;
-import ar.net.argentum.cliente.motor.gamedata.Baldosa;
-import ar.net.argentum.cliente.motor.user.InventarioSlot;
-import ar.net.argentum.cliente.motor.user.Orientacion;
-import ar.net.argentum.cliente.motor.user.Usuario;
+import ar.net.argentum.cliente.juego.InventarioSlot;
+import ar.net.argentum.cliente.juego.Usuario;
+import ar.net.argentum.cliente.mundo.Baldosa;
+import ar.net.argentum.cliente.mundo.Orientacion;
 import java.awt.HeadlessException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -50,13 +50,13 @@ public class ConexionConServidor extends Thread {
     protected static final byte PQT_MUNDO_REPRODUCIR_ANIMACION = 0x9;
     protected static final byte PQT_USUARIO_CAMINAR = 0x10;
     protected static final byte PQT_USUARIO_CAMBIAR_DIRECCION = 0x11;
-
     protected static final byte PQT_PERSONAJE_CREAR = 0x12;
     protected static final byte PQT_PERSONAJE_CAMBIAR = 0x13;
     protected static final byte PQT_PERSONAJE_CAMINAR = 0x14;
     protected static final byte PQT_PERSONAJE_ANIMACION = 0x15;
     protected static final byte PQT_PERSONAJE_QUITAR = 0x16;
     protected static final byte PQT_CLICK = 0x17;
+    protected static final byte PQT_USUARIO_GOLPEA = 0x18;
 
     protected static final Logger LOGGER = Logger.getLogger(ConexionConServidor.class.getName());
     private final ClienteArgentum cliente;
@@ -197,6 +197,7 @@ public class ConexionConServidor extends Thread {
 
                 case PQT_PERSONAJE_QUITAR:
                     recibirPersonajeQuitar(dis);
+                    break;
 
                 default:
                     LOGGER.fatal("Recibimos un paquete que no supimos manejar (" + tipoPaquete + ")");
@@ -465,6 +466,15 @@ public class ConexionConServidor extends Thread {
         try {
             dos.writeByte(PQT_USUARIO_CAMBIAR_DIRECCION);
             dos.writeByte(orientacion.valor());
+        } catch (IOException ex) {
+            LOGGER.fatal(null, ex);
+        }
+    }
+
+    public void enviarUsuarioGolpea() {
+        LOGGER.debug("PQT_USUARIO_GOLPEA>>");
+        try {
+            dos.writeByte(PQT_USUARIO_GOLPEA);
         } catch (IOException ex) {
             LOGGER.fatal(null, ex);
         }

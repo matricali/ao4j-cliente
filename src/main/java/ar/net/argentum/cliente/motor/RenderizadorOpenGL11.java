@@ -16,10 +16,9 @@
  */
 package ar.net.argentum.cliente.motor;
 
-import ar.net.argentum.cliente.motor.gamedata.Sprite;
-import ar.net.argentum.cliente.motor.surface.ISurface;
-import ar.net.argentum.cliente.motor.surface.Textura;
+import ar.net.argentum.cliente.motor.texturas.Textura;
 import org.lwjgl.opengl.GL11;
+import ar.net.argentum.cliente.motor.texturas.ITexturas;
 
 /**
  * Clase que encapsula todo lo necesario para dibujar las texturas del juego en
@@ -30,7 +29,7 @@ import org.lwjgl.opengl.GL11;
 public class RenderizadorOpenGL11 implements Renderizador {
 
     protected boolean dibujando;
-    protected final ISurface texturas;
+    protected final ITexturas texturas;
 
     protected final int x;
     protected final int y;
@@ -39,7 +38,7 @@ public class RenderizadorOpenGL11 implements Renderizador {
     protected final int anchoVentana;
     protected final int altoVentana;
 
-    public RenderizadorOpenGL11(ISurface surfaces, int anchoVentana, int altoVentana, int x, int y, int ancho, int alto) {
+    public RenderizadorOpenGL11(ITexturas surfaces, int anchoVentana, int altoVentana, int x, int y, int ancho, int alto) {
         this.texturas = surfaces;
         this.x = x;
         this.y = y;

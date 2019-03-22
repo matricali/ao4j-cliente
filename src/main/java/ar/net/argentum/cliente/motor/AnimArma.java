@@ -14,38 +14,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ar.net.argentum.cliente.motor.gamedata;
+package ar.net.argentum.cliente.motor;
 
 /**
- * Almacena las animaciones de un cuerpo que puede ser vestido por un
- * {@link Personaje} en todas sus direcciones.
+ * Almacena las animaciones de un arma en todas sus direcciones.
  *
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */
-public class AnimCuerpo extends AnimEquipable {
+public class AnimArma extends AnimEquipable {
 
-    /**
-     * No todos los cuerpos tienen la misma altura, por esa razon es necesario
-     * saber en que posicion vamos a dibujar la cabeza.
-     */
-    Posicion offsetCabeza;
-
-    public AnimCuerpo() {
+    public AnimArma() {
         super();
-        this.offsetCabeza = new Posicion();
     }
 
-    public AnimCuerpo(AnimCuerpo original) {
-        super(original);
-        this.offsetCabeza = original.offsetCabeza;
-    }
-
-    public AnimCuerpo(Sprite sprite, short a1, short a2, short a3, short a4, int offsetX, int offsetY, boolean iniciado) {
+    public AnimArma(Sprite sprite, short a1, short a2, short a3, short a4, boolean iniciado) {
         super(sprite, a1, a2, a3, a4, iniciado);
-        this.offsetCabeza = new Posicion(offsetX, offsetY);
     }
-    
-    public Posicion getOffsetCabeza() {
-        return offsetCabeza;
+
+    public AnimArma(AnimEquipable original) {
+        super(original);
     }
 }

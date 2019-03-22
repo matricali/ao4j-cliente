@@ -1,21 +1,21 @@
-package ar.net.argentum.cliente.motor.surface;
+package ar.net.argentum.cliente.motor.texturas;
 
-import ar.net.argentum.cliente.motor.gamedata.Sprite;
+import ar.net.argentum.cliente.motor.Sprite;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.log4j.Logger;
 
-public class SurfaceRasta implements ISurface {
+public class TexturasDB implements ITexturas {
 
-    private static final Logger LOGGER = Logger.getLogger(SurfaceRasta.class);
+    private static final Logger LOGGER = Logger.getLogger(TexturasDB.class);
     protected HashMap<Integer, Textura> texturas;
 
-    public SurfaceRasta() {
+    public TexturasDB() {
         this.texturas = new HashMap<>();
     }
 
     @Override
-    public void initialize() {
+    public void inicializar() {
         LOGGER.info("Inicializando un nuevo manejador de texturas...");
     }
 

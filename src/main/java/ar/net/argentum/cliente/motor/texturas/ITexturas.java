@@ -14,24 +14,48 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this programa.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ar.net.argentum.cliente.motor.surface;
+package ar.net.argentum.cliente.motor.texturas;
 
-import ar.net.argentum.cliente.motor.gamedata.Sprite;
+import ar.net.argentum.cliente.motor.Sprite;
 
 /**
  * Representa un manejador de texturas.
  *
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */
-public interface ISurface {
+public interface ITexturas {
 
-    public void initialize();
+    /**
+     * Aca se deberia hacer todo lo necesario antes de podar cargar las texturas
+     */
+    public void inicializar();
 
+    /**
+     * Obtener la instancia de Textura del Sprite dado
+     *
+     * @param sprite Sprite del cual se desea obtener la textura
+     * @return La textura
+     */
     public Textura getTextura(Sprite sprite);
 
+    /**
+     * Obtener la instancia de Textura correspondiente al numero de archivo
+     *
+     * @param fileNum Numero de archivo del cual se desea obtener la textura
+     * @return La textura
+     */
     public Textura getTextura(int fileNum);
 
+    /**
+     * Cargar un archivo de textura en memoria y generar la instancia de Textura
+     *
+     * @param fileNum Numero de archivo del cual se desea obtener la textura
+     * @return
+     */
     public Textura cargarTextura(int fileNum);
-    
+
+    /**
+     * Aca se deberia destruir todo lo que ya no se necesita
+     */
     public void destruir();
 }

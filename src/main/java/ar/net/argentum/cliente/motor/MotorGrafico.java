@@ -1,23 +1,17 @@
 package ar.net.argentum.cliente.motor;
 
 import ar.net.argentum.cliente.ClienteArgentum;
-import ar.net.argentum.cliente.motor.user.Usuario;
-import ar.net.argentum.cliente.motor.gamedata.GameData;
-import ar.net.argentum.cliente.motor.gamedata.Animacion;
-import ar.net.argentum.cliente.motor.gamedata.Sprite;
-import ar.net.argentum.cliente.motor.surface.ISurface;
-import ar.net.argentum.cliente.motor.surface.SurfaceRasta;
-import ar.net.argentum.cliente.motor.user.Orientacion;
+import ar.net.argentum.cliente.Juego;
+import ar.net.argentum.cliente.Recursos;
+import ar.net.argentum.cliente.fuentes.FuenteTruetypeGL32;
+import ar.net.argentum.cliente.fuentes.IFuente;
 import ar.net.argentum.cliente.interfaz.GUI;
-import ar.net.argentum.cliente.interfaz.IInterfaz;
-import ar.net.argentum.cliente.motor.gamedata.AnimArma;
-import ar.net.argentum.cliente.motor.gamedata.AnimCabeza;
-import ar.net.argentum.cliente.motor.gamedata.AnimCuerpo;
-import ar.net.argentum.cliente.motor.gamedata.AnimEscudo;
-import ar.net.argentum.cliente.motor.gamedata.Baldosa;
-import ar.net.argentum.cliente.motor.gamedata.Posicion;
+import ar.net.argentum.cliente.motor.texturas.ITexturas;
+import ar.net.argentum.cliente.motor.texturas.TexturasDB;
+import ar.net.argentum.cliente.juego.Usuario;
+import ar.net.argentum.cliente.mundo.Orientacion;
+import ar.net.argentum.cliente.mundo.Posicion;
 import org.apache.log4j.Logger;
-
 import static org.lwjgl.glfw.GLFW.*;
 
 /**
@@ -28,71 +22,199 @@ import static org.lwjgl.glfw.GLFW.*;
 public class MotorGrafico {
 
     public static final Logger LOGGER = Logger.getLogger(MotorGrafico.class);
-    public static final int TILE_PIXEL_WIDTH = 32;
-    public static final int TILE_PIXEL_HEIGHT = 32;
-
-    private final ClienteArgentum cliente;
-    ISurface surface;
-    GameData game;
-    IInterfaz interfaz;
-    Renderizador render;
-
-    private long ventana;
-
-    final int XMaxMapSize = 100;
-    final int XMinMapSize = 1;
-    final int YMaxMapSize = 100;
-    final int YMinMapSize = 1;
-
-    final float engineBaseSpeed = 0.018f;
-
     /**
-     * Cuantos tiles de distancia del personaje queremos dibujar
+     * Ancho de las baldosas (en pixeles)
+     */
+    public static final int TILE_PIXEL_WIDTH = 32;
+    /**
+     * Alto de las baldosas (en pixeles)
+     */
+    public static final int TILE_PIXEL_HEIGHT = 32;
+    /**
+     * Desplazamiento vertical por cuadro (en pixeles)
+     */
+    protected final int scrollPixelsPerFrameX = 8;
+    /**
+     * Desplazamiento horizontal por cuadro (en pixeles)
+     */
+    protected final int scrollPixelsPerFrameY = 8;
+    /**
+     * Ancho maximo del mapa (en baldosas)
+     */
+    protected final int XMaxMapSize = 100;
+    /**
+     * Ancho minimo del mapa (en baldosas)
+     */
+    protected final int XMinMapSize = 1;
+    /**
+     * Alto maximo del mapa (en baldosas)
+     */
+    protected final int YMaxMapSize = 100;
+    /**
+     * Alto minimo del mapa (en baldosas)
+     */
+    protected final int YMinMapSize = 1;
+    /**
+     * Velocidad del motor grafico
+     */
+    protected final float engineBaseSpeed = 0.018f;
+    /**
+     * Instancia del cliente
+     */
+    protected final ClienteArgentum cliente;
+    /**
+     * Manejador de texturas
+     */
+    protected ITexturas texturas;
+    /**
+     * Manejador de la logica
+     */
+    protected Juego juego;
+    /**
+     * Instancia de la interfaz grafica
+     */
+    protected IInterfaz interfaz;
+    /**
+     * Instancia del renderizador
+     */
+    protected Renderizador render;
+    /**
+     * Handler de la ventana
+     */
+    protected long ventana;
+    /**
+     * Distancia de dibujado (en baldosas)
      */
     protected int tileBufferSize;
+    /**
+     * Vertice lateral izquierdo de la zona de dibujado del juego (en pixeles)
+     */
     protected int viewportX;
+    /**
+     * Vertice superior de la zona de dibujado del juego (en pixeles)
+     */
     protected int viewportY;
+    /**
+     * Ancho de la zona de dibujado del juego (en pixeles)
+     */
     protected int viewportAncho;
+    /**
+     * Alto de la zona de dibujado del juego (en pixeles)
+     */
     protected int viewportAlto;
+    /**
+     * Ancho de la zona de dibujado del juego (en baldosas)
+     */
     protected int anchoEnBaldosas;
+    /**
+     * Ancho de la zona de dibujado del juego (en baldosas)
+     */
     protected int altoEnBaldosas;
+    /**
+     * Mitad horizontal de la zona de dibujado del juego (en baldosas)
+     * (anchoEnBaldosas / 2)
+     */
     protected int halfWindowTileWidth;
+    /**
+     * Mitad vertical de la zona de dibujado del juego (en baldosas)
+     * (altoEnBaldosas / 2)
+     */
     protected int halfWindowTileHeight;
-
-    final int scrollPixelsPerFrameX = 8;
-    final int scrollPixelsPerFrameY = 8;
-
-    private float offsetCounterX = 0;
-    private float offsetCounterY = 0;
-    private boolean userMoving = false;
-
-    private long lFrameTimer;
-    private long framesPerSecCounter;
-    private long FPS;
-    private long timerTiempoTranscurrido;
-    private float timerTicksPerFrame;
-    private long timerEndtime;
-    private boolean corriendo;
-    private FuenteTruetype fuente;
-
-    public Posicion AddToUserPos = new Posicion();
-    public Personaje[] personajes = new Personaje[10000 + 1];
-
+    /**
+     * Contador de desplazamiento horizontal
+     */
+    protected float offsetCounterX = 0;
+    /**
+     * Contador de desplazamiento vertical
+     */
+    protected float offsetCounterY = 0;
+    /**
+     * Nos estamos moviendo?
+     */
+    protected boolean userMoving = false;
+    /**
+     * Timer ultimo calculo de cuadros por segundo (FPS)
+     */
+    protected long lFrameTimer;
+    /**
+     * Cantidad de frames que se dibujaron antes de la ultima comprobacion de
+     * FPS
+     */
+    protected long fpsContador;
+    /**
+     * Cantidad de cuadros que se dibujaron en el ultimo segundo
+     */
+    protected long FPS;
+    /**
+     * Cantidad de tiempo que transcurrio del ultimo calculo de cuadros por
+     * segundo
+     */
+    protected long fpsTiempoTranscurrido;
+    protected float timerTicksPerFrame;
+    protected long timerEndtime;
+    /**
+     * El motor esta corriendo?
+     */
+    protected boolean corriendo;
+    /**
+     * Instancia del manejador de fuentes
+     */
+    protected IFuente fuente;
+    /**
+     * Contador de desplazamiento
+     */
+    protected Posicion desplazamiento = new Posicion();
+    /**
+     * Coleccion de personajes
+     */
+    protected Personaje[] personajes = new Personaje[10000 + 1];
+    /**
+     * Charindex de mayor numero que hemos creado
+     */
+    protected int ultimoCharindex;
+    /**
+     * Color de luz ambiental
+     */
     Color ambientcolor;
 
-    public MotorGrafico(ClienteArgentum cliente, long ventana, GameData game) {
+    /**
+     * Generar una nueva instancia del motor grafico
+     *
+     * @param cliente Instancia del cliente
+     * @param ventana Handler de la ventana
+     * @param juego Instancia del juego
+     */
+    public MotorGrafico(ClienteArgentum cliente, long ventana, Juego juego) {
         this.cliente = cliente;
         this.ventana = ventana;
-        this.game = game;
-        this.surface = new SurfaceRasta();
-//        this.fuente = new FuenteTruetype("recursos/fuentes/FreeSans.ttf");
-
-        surface.initialize();
-
-//        fuente.iniciar();
+        this.juego = juego;
         this.ambientcolor = new Color(1.0f, 1.0f, 1.0f);
+        this.texturas = new TexturasDB();
+        texturas.inicializar();
     }
 
+    /**
+     * Iniciamos el motor grafico
+     *
+     * @param anchoVentana Ancho de la ventana en pixeles
+     * @param altoVentana Alto de la ventana en pixeles
+     */
+    public void iniciar(int anchoVentana, int altoVentana) {
+        // El viewport del juego ocupa toda la ventana
+        iniciar(anchoVentana, altoVentana, 0, 0, anchoVentana, altoVentana);
+    }
+
+    /**
+     * Iniciamos el motor grafico
+     *
+     * @param anchoVentana Ancho de la ventana en pixeles
+     * @param altoVentana Alto de la ventana en pixeles
+     * @param viewportX Vertice horizontal izquierdo de la zona de dibujado del
+     * juego
+     * @param viewportY Vertice superior de la zona de dibujado del juego
+     * @param viewportAncho Ancho de la zona de dibujado del juego
+     * @param viewportAlto Ancho de la zona de dibujado del juego
+     */
     public void iniciar(int anchoVentana, int altoVentana, int viewportX, int viewportY, int viewportAncho, int viewportAlto) {
 
         this.viewportX = viewportX;
@@ -106,14 +228,18 @@ public class MotorGrafico {
         this.tileBufferSize = 2 + (halfWindowTileWidth > halfWindowTileHeight ? halfWindowTileWidth : halfWindowTileHeight);
 
         // Creamos la instancia del renderizador
-        this.render = new RenderizadorOpenGL32(ventana, surface, anchoVentana, altoVentana, viewportX, viewportY, viewportAncho, viewportAlto);
+        this.render = new RenderizadorOpenGL32(ventana, texturas, anchoVentana, altoVentana, viewportX, viewportY, viewportAncho, viewportAlto);
 
         // Lo configuramos
         render.iniciar();
 
-        // Creamos la interfaz grafica
-        this.interfaz = new GUI(cliente, ventana, game, surface);
+        // Iniciamos la fuente
+        this.fuente = new FuenteTruetypeGL32("recursos/fuentes/FreeSans.ttf", (RenderizadorOpenGL32) render);
 
+        // Creamos la interfaz grafica
+        this.interfaz = new GUI(cliente, ventana, juego, texturas);
+
+        // Inicializamos los personajes
         for (int i = 1; i <= 10000; i++) {
             personajes[i] = new Personaje();
             personajes[i].setActivo(false);
@@ -121,15 +247,22 @@ public class MotorGrafico {
 
         this.corriendo = true;
         cliente.setJugando(false);
+        cliente.conectar("localhost", 7666, "rasta", "1");
 
         loop();
         destruir();
     }
 
+    /**
+     * Detener el bucle principal del motor grafico
+     */
     public void detener() {
         this.corriendo = false;
     }
 
+    /**
+     * Bucle principal
+     */
     private void loop() {
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
@@ -138,23 +271,26 @@ public class MotorGrafico {
         }
     }
 
+    /**
+     * Iniciar rutina de dibujado
+     */
     private void render() {
         // Limpiamos la pantalla
         render.limpiarPantalla();
 
-        // Dibujamos el juegoo
+        // Dibujamos el juego
         if (cliente.isJugando()) {
             render.iniciarDibujado(ventana);
             dibujarSiguienteCuadro();
             render.finalizarDibujado();
         }
+
         // Dibujamos la interfaz gráfica
         interfaz.dibujarInterfaz();
 
-//        fuente.iniciarDibujado();
-//        fuente.dibujarTexto(12, 12, 0, Color.BLACK, FPS+" FPS");
-//        fuente.dibujarTexto(10, 10, 0, Color.WHITE, FPS+" FPS");
-//        fuente.terminarDibujado();
+        dibujarTexto(22, 22, 0, Color.BLACK, FPS + " FPS");
+        dibujarTexto(20, 20, 0, Color.WHITE, FPS + " FPS");
+
         // Actualizamos los events de entrada (teclado y mouse)
         glfwPollEvents();
 
@@ -162,59 +298,83 @@ public class MotorGrafico {
         glfwSwapBuffers(ventana);
 
         // Actualizamos el contador de FPS
-        if (getTime() >= lFrameTimer + 1000) {
-            lFrameTimer = getTime();
-            FPS = framesPerSecCounter;
-            framesPerSecCounter = 0;
+        if (getTimer() >= lFrameTimer + 1000) {
+            lFrameTimer = getTimer();
+            FPS = fpsContador;
+            fpsContador = 0;
         }
 
-        framesPerSecCounter++;
-        timerTiempoTranscurrido = getElapsedTime();
-        timerTicksPerFrame = (timerTiempoTranscurrido * engineBaseSpeed);
+        fpsContador++;
+        fpsTiempoTranscurrido = getTiempoTranscurrido();
+        timerTicksPerFrame = (fpsTiempoTranscurrido * engineBaseSpeed);
     }
 
-    private long getTime() {
+    /**
+     * @return Obtiene el valor actual del reloj de la maquina virtual en
+     * ejecucion
+     * @see System.nanoTime
+     */
+    private long getTimer() {
         return System.nanoTime() / 1000000;
     }
 
-    private long getElapsedTime() {
+    /**
+     * @return Tiempo transcurrido desde la ultima comprobacion de cuadros por
+     * segundo
+     */
+    private long getTiempoTranscurrido() {
 
-        long startTime = getTime();
-        long ms = (startTime - timerEndtime);
-        timerEndtime = getTime();
+        long inicio = getTimer();
+        long ms = (inicio - timerEndtime);
+        timerEndtime = getTimer();
         return ms;
     }
 
+    /**
+     * Calcula el siguiente cuadro que se va a dibujar. Esta rutina actualiza
+     * todas las animaciones un cuadro.
+     */
     private void dibujarSiguienteCuadro() {
-        final Usuario user = game.getUsuario();
+        final Usuario user = juego.getUsuario();
 
+        // Nos estabamos moviendo?
         if (userMoving) {
-            if (0 != AddToUserPos.x()) {
-                offsetCounterX = offsetCounterX - scrollPixelsPerFrameX * AddToUserPos.x() * timerTicksPerFrame;
-                if (Math.abs(offsetCounterX) >= Math.abs(TILE_PIXEL_WIDTH * AddToUserPos.x())) {
+            // Nos estabamos moviendo horizontalmente?
+            if (0 != desplazamiento.x()) {
+                offsetCounterX = offsetCounterX - scrollPixelsPerFrameX * desplazamiento.x() * timerTicksPerFrame;
+                // Nos terminamos de mover?
+                if (Math.abs(offsetCounterX) >= Math.abs(TILE_PIXEL_WIDTH * desplazamiento.x())) {
+                    // Nos terminamos de mover, reiniciamos los contadores
                     offsetCounterX = 0;
-                    AddToUserPos.x(0);
+                    desplazamiento.x(0);
                     userMoving = false;
                 }
             }
 
-            if (0 != AddToUserPos.y()) {
-                offsetCounterY = offsetCounterY - scrollPixelsPerFrameY * AddToUserPos.y() * timerTicksPerFrame;
-                if (Math.abs(offsetCounterY) >= Math.abs(TILE_PIXEL_HEIGHT * AddToUserPos.y())) {
+            // Nos estabamos moviendo verticalmente?
+            if (0 != desplazamiento.y()) {
+                offsetCounterY = offsetCounterY - scrollPixelsPerFrameY * desplazamiento.y() * timerTicksPerFrame;
+                // Nos terminamos de mover?
+                if (Math.abs(offsetCounterY) >= Math.abs(TILE_PIXEL_HEIGHT * desplazamiento.y())) {
+                    // Nos terminamos de mover, reiniciamos los contadores
                     offsetCounterY = 0;
-                    AddToUserPos.y(0);
+                    desplazamiento.y(0);
                     userMoving = false;
                 }
             }
         }
 
-        //OffsetCounterY = OffsetCounterY - 2;
-        dibujarPantalla(user.getPosicion().x() - AddToUserPos.x(),
-                user.getPosicion().y() - AddToUserPos.y(),
+        dibujarPantalla(user.getPosicion().x() - desplazamiento.x(),
+                user.getPosicion().y() - desplazamiento.y(),
                 (int) (offsetCounterX), (int) (offsetCounterY));
     }
 
-    private void moverPantalla(Orientacion orientacion) {
+    /**
+     * Desplazar pantalla en la orientacion dada
+     *
+     * @param orientacion
+     */
+    public void moverPantalla(Orientacion orientacion) {
         int x = 0, y = 0, tX = 0, tY = 0;
         switch (orientacion) {
             case NORTE:
@@ -231,16 +391,16 @@ public class MotorGrafico {
                 break;
         }
 
-        Usuario user = game.getUsuario();
+        Usuario user = juego.getUsuario();
         tX = user.getPosicion().x() + x;
         tY = user.getPosicion().y() + y;
 
         if (tX < tileBufferSize || tX > XMaxMapSize - tileBufferSize || tY < tileBufferSize || tY > YMaxMapSize - tileBufferSize) {
             return;
         }
-        AddToUserPos.x(x);
+        desplazamiento.x(x);
         user.getPosicion().x(tX);
-        AddToUserPos.y(y);
+        desplazamiento.y(y);
         user.getPosicion().y(tY);
         this.userMoving = true;
     }
@@ -292,8 +452,8 @@ public class MotorGrafico {
          * la baldosa anterior y luego lo ponemos en la nueva
          */
         try {
-            game.getMapa().getBaldosa(X, Y).setCharindex(0);
-            game.getMapa().getBaldosa(nX, nY).setCharindex(id_personaje);
+            juego.getMapa().getBaldosa(X, Y).setCharindex(0);
+            juego.getMapa().getBaldosa(nX, nY).setCharindex(id_personaje);
         } catch (Exception ex) {
             LOGGER.error(null, ex);
         }
@@ -322,7 +482,7 @@ public class MotorGrafico {
         }
         if (animar) {
             if (grh.isStarted()) {
-                grh.animar(timerTiempoTranscurrido);
+                grh.animar(fpsTiempoTranscurrido);
             }
         }
 
@@ -345,6 +505,14 @@ public class MotorGrafico {
         render.dibujarSprite(graficoActual, x, y, transparente, color);
     }
 
+    /**
+     * Dibujamos el cuadro actual
+     *
+     * @param tileX
+     * @param tileY
+     * @param pixelOffsetX
+     * @param pixelOffsetY
+     */
     private void dibujarPantalla(int tileX, int tileY, int pixelOffsetX, int pixelOffsetY) {
         int y;
         int x;
@@ -414,13 +582,13 @@ public class MotorGrafico {
         for (y = screenMinY; y <= screenMaxY; y++) {
             for (x = screenMinX; x <= screenMaxX; x++) {
                 // Dibujamos la primer capa
-                dibujarAnimacion(game.getMapa().getBaldosa(x, y).getCapa(1),
+                dibujarAnimacion(juego.getMapa().getBaldosa(x, y).getCapa(1),
                         (screenX - 1) * TILE_PIXEL_WIDTH + pixelOffsetX,
                         (screenY - 1) * TILE_PIXEL_HEIGHT + pixelOffsetY, true, true, false, ambientcolor);
 
                 // Dibujamos la segunda capa
-                if (game.getMapa().getBaldosa(x, y).getCapa(2).esValido()) {
-                    dibujarAnimacion(game.getMapa().getBaldosa(x, y).getCapa(2),
+                if (juego.getMapa().getBaldosa(x, y).getCapa(2).esValido()) {
+                    dibujarAnimacion(juego.getMapa().getBaldosa(x, y).getCapa(2),
                             (screenX - 1) * TILE_PIXEL_WIDTH + pixelOffsetX,
                             (screenY - 1) * TILE_PIXEL_HEIGHT + pixelOffsetY, true, true, false, ambientcolor);
                 }
@@ -430,27 +598,37 @@ public class MotorGrafico {
             screenY++;
         }
 
+        int xd;
+        int yd;
         screenY = minYOffset - tileBufferSize;
         for (y = minY; y <= maxY; y++) {
             screenX = minXOffset - tileBufferSize;
             for (x = minX; x <= maxX; x++) {
-                int xd = screenX * 32 + pixelOffsetX;
-                int yd = screenY * 32 + pixelOffsetY;
+                xd = screenX * 32 + pixelOffsetX;
+                yd = screenY * 32 + pixelOffsetY;
                 // Si hay un objeto arrojado en el suelo en esta posicion, entonces lo dibujamos.
-                if (game.getMapa().getBaldosa(x, y).getAnimObjecto().esValido()) {
-                    dibujarAnimacion(game.getMapa().getBaldosa(x, y).getAnimObjecto(), xd, yd, true, true, false, ambientcolor);
+                if (juego.getMapa().getBaldosa(x, y).getAnimObjecto().esValido()) {
+                    dibujarAnimacion(juego.getMapa().getBaldosa(x, y).getAnimObjecto(), xd, yd, true, true, false, ambientcolor);
                 } else {
 
                 }
 
-                // Si hay un personaje parado en esta posicion, entonces lo dibujamos.
-                if (game.getMapa().getBaldosa(x, y).getCharindex() > 0) {
-                    dibujarPersonaje(game.getMapa().getBaldosa(x, y).getCharindex(), xd, yd);
+                // Hay un personaje parado en esta baldosa?
+                if (juego.getMapa().getBaldosa(x, y).getCharindex() > 0) {
+                    Personaje p = personajes[juego.getMapa().getBaldosa(x, y).getCharindex()];
+
+                    if (!p.isActivo()) {
+                        // Si el personaje no esta activo, entonces lo sacamos
+                        juego.getMapa().getBaldosa(x, y).setCharindex(0);
+                    } else {
+                        // Si el personaje esta activo, entonces lo dibujamos
+                        dibujarPersonaje(p, xd, yd);
+                    }
                 }
 
                 // Dibujamos la capa 3
-                if (game.getMapa().getBaldosa(x, y).getCapa(3).esValido()) {
-                    dibujarAnimacion(game.getMapa().getBaldosa(x, y).getCapa(3), xd,
+                if (juego.getMapa().getBaldosa(x, y).getCapa(3).esValido()) {
+                    dibujarAnimacion(juego.getMapa().getBaldosa(x, y).getCapa(3), xd,
                             yd, true, true, false, ambientcolor);
                 }
                 screenX++;
@@ -462,11 +640,11 @@ public class MotorGrafico {
         for (y = minY; y <= maxY; y++) {
             screenX = minXOffset - tileBufferSize;
             for (x = minX; x <= maxX; x++) {
-                int xd = screenX * 32 + pixelOffsetX;
-                int yd = screenY * 32 + pixelOffsetY;
+                xd = screenX * 32 + pixelOffsetX;
+                yd = screenY * 32 + pixelOffsetY;
                 // Dibujamos el techo
-                if (game.getMapa().getBaldosa(x, y).getCapa(4).esValido()) {
-                    dibujarAnimacion(game.getMapa().getBaldosa(x, y).getCapa(4), xd,
+                if (juego.getMapa().getBaldosa(x, y).getCapa(4).esValido()) {
+                    dibujarAnimacion(juego.getMapa().getBaldosa(x, y).getCapa(4), xd,
                             yd, true, true, false, ambientcolor);
                 }
                 screenX++;
@@ -474,7 +652,7 @@ public class MotorGrafico {
             screenY++;
         }
 
-        // drawText(FPS + " FPS", 454, 8, ambientcolor, 1, false);
+        dibujarTexto(454, 8, 1, ambientcolor, FPS + " FPS");
     }
 
     /**
@@ -578,7 +756,7 @@ public class MotorGrafico {
 
                     if (personaje.getNombre().length() > 0) {
                         // @TODO: Dibujar el nombre
-                        //drawText(line, PixelOffsetX - (line.length() * 4) + 28, PixelOffsetY + 30, color, 1, false);
+                        dibujarTexto(pixelOffsetX - (personaje.getNombre().length() * 4) + 28, pixelOffsetY + 30, 1, ambientcolor, personaje.getNombre());
                     }
                 }
             }
@@ -605,7 +783,7 @@ public class MotorGrafico {
 
     public void destruir() {
         LOGGER.info("Destruyendo motor grafico...");
-        this.surface.destruir();
+        this.texturas.destruir();
     }
 
     /**
@@ -617,39 +795,44 @@ public class MotorGrafico {
      * @param action
      * @param mods
      */
-    public void keyEvents(long window, int key, int scancode, int action, int mods) {
+    public void entradaTeclado(long window, int key, int scancode, int action, int mods) {
         if (cliente.isJugando()) {
 
             if (key == GLFW_KEY_RIGHT && action != GLFW_RELEASE) {
                 if (userMoving) {
                     return;
                 }
-                usuarioCamina(Orientacion.ESTE);
+                juego.usuarioCamina(Orientacion.ESTE);
             }
 
             if (key == GLFW_KEY_LEFT && action != GLFW_RELEASE) {
                 if (userMoving) {
                     return;
                 }
-                usuarioCamina(Orientacion.OESTE);
+                juego.usuarioCamina(Orientacion.OESTE);
             }
 
             if (key == GLFW_KEY_UP && action != GLFW_RELEASE) {
                 if (userMoving) {
                     return;
                 }
-                usuarioCamina(Orientacion.NORTE);
+                juego.usuarioCamina(Orientacion.NORTE);
             }
 
             if (key == GLFW_KEY_DOWN && action != GLFW_RELEASE) {
                 if (userMoving) {
                     return;
                 }
-                usuarioCamina(Orientacion.SUR);
+                juego.usuarioCamina(Orientacion.SUR);
+            }
+
+            if ((key == GLFW_KEY_LEFT_CONTROL || key == GLFW_KEY_RIGHT_CONTROL) && action != GLFW_RELEASE) {
+
+                juego.usuarioGolpea();
             }
         }
 
-        interfaz.keyEvents(window, key, scancode, action, mods);
+        interfaz.entradaTeclado(window, key, scancode, action, mods);
     }
 
     /**
@@ -662,92 +845,60 @@ public class MotorGrafico {
      * @param action
      * @param mods
      */
-    public void mouseEvents(long window, int x, int y, int button, int action, int mods) {
-        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-            // Verificamos que el click esta dentro del area de dibujo del juego
-            if (x > viewportX && x < viewportX + viewportAncho && y > viewportY && y < viewportY + viewportAncho) {
-                // Convertimos la posicion del mouse en coordenadas del juego
-                int cX = x - viewportX;
-                int cY = y - viewportY;
-                int tX = game.getUsuario().getPosicion().x() + cX / TILE_PIXEL_WIDTH - anchoEnBaldosas / 2;
-                int tY = game.getUsuario().getPosicion().y() + cY / TILE_PIXEL_HEIGHT - altoEnBaldosas / 2;
-                cliente.getConexion().enviarClick(tX, tY);
+    public void entradaMouse(long window, int x, int y, int button, int action, int mods) {
+        // Los eventos del juego los procesamos solo si el usuario esta jugando
+        if (cliente.isJugando()) {
+            if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+                // Verificamos que el click esta dentro del area de dibujo del juego
+                if (x > viewportX && x < viewportX + viewportAncho && y > viewportY && y < viewportY + viewportAncho) {
+                    // Convertimos la posicion del mouse en coordenadas del juego
+                    int cX = x - viewportX;
+                    int cY = y - viewportY;
+                    int tX = juego.getUsuario().getPosicion().x() + cX / TILE_PIXEL_WIDTH - anchoEnBaldosas / 2;
+                    int tY = juego.getUsuario().getPosicion().y() + cY / TILE_PIXEL_HEIGHT - altoEnBaldosas / 2;
+                    cliente.getConexion().enviarClick(tX, tY);
 
+                }
             }
         }
         interfaz.mouseEvents(window, x, y, button, action, mods);
     }
 
-    private Posicion calcularPaso(Posicion posicion, Orientacion orientacion) {
-        return calcularPaso(posicion.x(), posicion.y(), orientacion);
-    }
-
-    public Posicion calcularPaso(int x, int y, Orientacion orientacion) {
-        int addX = 0;
-        int addY = 0;
-
-        switch (orientacion) {
-            case NORTE:
-                addY = -1;
-                break;
-
-            case ESTE:
-                addX = 1;
-                break;
-
-            case SUR:
-                addY = 1;
-                break;
-
-            case OESTE:
-                addX = -1;
-                break;
+    /**
+     * Creamos un nuevo personaje que va a ser dibujado por el motor
+     *
+     * @param charindex ID del personaje
+     * @param nombre
+     * @param x Posicion horizontal (el baldosas)
+     * @param y Posicion vertical (en baldosas)
+     * @param orientacion
+     * @param cabeza ID de la animacion de la cabeza
+     * @param cuerpo ID de la animacion del cuerpo
+     * @param casco ID de la animacion del casco
+     * @param arma ID de la animacion del arma
+     * @param escudo ID de la animacion del escudo
+     *
+     * @return Charindex del personaje creado
+     */
+    public int crearPersonaje(int charindex, String nombre, int x, int y, Orientacion orientacion, int cabeza, int cuerpo, int casco, int arma, int escudo) {
+        if (charindex > ultimoCharindex) {
+            ultimoCharindex = charindex;
         }
-
-        return new Posicion(x + addX, y + addY);
-    }
-
-    public void usuarioCamina(Orientacion orientacion) {
-        Usuario user = game.getUsuario();
-
-        Posicion nuevaPosicion = calcularPaso(user.getPosicion(), orientacion);
-        Baldosa nuevaBaldosa = game.getMapa().getBaldosa(nuevaPosicion.x(), nuevaPosicion.y());
-
-        if (nuevaBaldosa == null) {
-            return;
-        }
-
-        if (game.getMapa().isPosicionValida(nuevaPosicion) && !user.isParalizado()) {
-            personajeDarPaso(1, orientacion);
-            moverPantalla(orientacion);
-            cliente.getConexion().enviarUsuarioCaminar(orientacion);
-        } else {
-            personajes[1].setOrientacion(orientacion);
-            cliente.getConexion().enviarUsuarioCambiarDireccion(orientacion);
-        }
-
-        personajesActualizarTodos();
-    }
-
-    public int crearPersonaje(int id, String nombre, int x, int y, Orientacion orientacion, int cabeza, int cuerpo, int casco, int arma, int escudo) {
-        if (id > game.last_char) {
-            game.last_char = id;
-        }
-        if (personajes[id].isActivo()) {
+        if (personajes[charindex].isActivo()) {
             return 0;
         }
-        personajes[id] = new Personaje(
+        personajes[charindex] = new Personaje(
                 nombre,
                 orientacion,
                 new Posicion(x, y),
-                new AnimCabeza(game.getCabeza(cabeza)),
-                new AnimCuerpo(game.getCuerpo(cuerpo)),
-                new AnimCabeza(game.getCasco(casco)),
-                new AnimArma(game.getArma(arma)),
-                new AnimEscudo(game.getEscudo(escudo)));
+                new AnimCabeza(Recursos.getCabeza(cabeza)),
+                new AnimCuerpo(Recursos.getCuerpo(cuerpo)),
+                new AnimCabeza(Recursos.getCasco(casco)),
+                new AnimArma(Recursos.getArma(arma)),
+                new AnimEscudo(Recursos.getEscudo(escudo)));
 
-        personajes[id].setActivo(true);
-        return id;
+        personajes[charindex].setActivo(true);
+        return charindex;
     }
 
     /**
@@ -757,18 +908,48 @@ public class MotorGrafico {
      * @see RefreshAllChars
      */
     public void personajesActualizarTodos() {
-        for (short i = 1; i <= game.getLastChar(); i++) {
+        for (short i = 1; i <= ultimoCharindex; i++) {
             if (personajes[i].isActivo()) {
-                game.getMapa().getBaldosa(personajes[i].getPosicion()).setCharindex(i);
+                juego.getMapa().getBaldosa(personajes[i].getPosicion()).setCharindex(i);
             }
         }
     }
 
+    /**
+     * @return Instancia de la interfaz grafica
+     */
     public IInterfaz getInterfaz() {
         return interfaz;
     }
 
+    /**
+     * @param charindex
+     * @return Obtiene la instancia del personaje correspondiente al charindex
+     */
     public Personaje getPersonaje(int charindex) {
         return personajes[charindex];
     }
+
+    /**
+     * Dibujar texto dentro de la zona de dibujado del juego
+     *
+     * @param x
+     * @param y
+     * @param idFuente
+     * @param color
+     * @param texto
+     */
+    public void dibujarTexto(int x, int y, int idFuente, Color color, String texto) {
+        fuente.dibujarTexto(x + viewportX, y + viewportY, idFuente, color, texto);
+    }
+
+    /**
+     * Obtiene el charindex de mayor numero
+     *
+     * @return
+     */
+    public int getUltimoCharindex() {
+        return ultimoCharindex;
+    }
+
 }

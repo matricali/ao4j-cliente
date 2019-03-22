@@ -16,9 +16,8 @@
  */
 package ar.net.argentum.cliente;
 
-import ar.net.argentum.cliente.interfaz.IInterfaz;
+import ar.net.argentum.cliente.motor.IInterfaz;
 import ar.net.argentum.cliente.motor.MotorGrafico;
-import ar.net.argentum.cliente.motor.gamedata.GameData;
 import ar.net.argentum.cliente.protocolo.ConexionConServidor;
 import java.io.IOException;
 import java.nio.DoubleBuffer;
@@ -66,7 +65,7 @@ public class Cliente implements ClienteArgentum {
      */
     private GLFWKeyCallback keyCallback;
 
-    private GameData game;
+    private Juego juego;
     private ConexionConServidor conexion = null;
     private final MotorGrafico motor;
 
@@ -133,7 +132,7 @@ public class Cliente implements ClienteArgentum {
                     glfwSetWindowShouldClose(window, true);
                 }
 
-                motor.keyEvents(window, key, scancode, action, mods);
+                motor.entradaTeclado(window, key, scancode, action, mods);
             }
         };
 
@@ -149,7 +148,7 @@ public class Cliente implements ClienteArgentum {
                     int x = (int) cx.get(0);
                     int y = (int) cy.get(0);
 
-                    motor.mouseEvents(window, x, y, button, action, mods);
+                    motor.entradaMouse(window, x, y, button, action, mods);
                 }
             }
 
@@ -161,14 +160,15 @@ public class Cliente implements ClienteArgentum {
         // Mostramos la ventana
         glfwShowWindow(window);
 
-        this.game = GameData.getInstancia();
+        this.juego = new Juego(this);
 
-        // Iniciamos la carga de los datos del juego
-        game.initialize();
+        // Iniciamos la carga de los recursos del juego
+        Recursos.cargar();
 
         // Iniciamos el motor grafico
-        this.motor = new MotorGrafico(this, window, game);
-        motor.iniciar(800, 600, 15, 169, 544, 416);
+        this.motor = new MotorGrafico(this, window, juego);
+        // motor.iniciar(800, 600, 15, 169, 544, 416);
+        motor.iniciar(800, 600);
 
         // Cerramos la conexion
         if (conexion != null) {
@@ -223,7 +223,7 @@ public class Cliente implements ClienteArgentum {
     }
 
     @Override
-    public GameData getJuego() {
-        return this.game;
+    public Juego getJuego() {
+        return this.juego;
     }
 }

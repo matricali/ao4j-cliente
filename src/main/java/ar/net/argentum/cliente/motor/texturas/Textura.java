@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package ar.net.argentum.cliente.motor.surface;
+package ar.net.argentum.cliente.motor.texturas;
 
 import java.nio.ByteBuffer;
 

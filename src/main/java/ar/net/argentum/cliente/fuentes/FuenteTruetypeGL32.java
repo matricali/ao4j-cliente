@@ -14,19 +14,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ar.net.argentum.cliente.motor;
+package ar.net.argentum.cliente.fuentes;
 
+import ar.net.argentum.cliente.motor.Color;
+import ar.net.argentum.cliente.motor.RenderizadorOpenGL32;
 import static ar.net.argentum.cliente.motor.Utils.ioResourceToByteBuffer;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
-import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
-import org.lwjgl.opengl.GL;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11C.GL_BLEND;
+import static org.lwjgl.opengl.GL11C.GL_ONE_MINUS_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11C.GL_SRC_ALPHA;
+import org.lwjgl.opengl.GL32C;
 import org.lwjgl.stb.*;
 import static org.lwjgl.stb.STBTruetype.*;
+import org.lwjgl.system.MemoryUtil;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.system.MemoryUtil.memAllocFloat;
 import static org.lwjgl.system.MemoryUtil.memFree;
@@ -35,15 +39,14 @@ import static org.lwjgl.system.MemoryUtil.memFree;
  *
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */
-public class FuenteTruetype {
+public class FuenteTruetypeGL32 implements IFuente {
 
     private static final int BITMAP_W = 512;
     private static final int BITMAP_H = 512;
 
     private static final float[] scale = {
         14.0f,
-        24.0f,
-    };
+        24.0f,};
 
     private static final int[] sf = {
         0, 1, 2,
@@ -53,14 +56,19 @@ public class FuenteTruetype {
     private final STBTTAlignedQuad q = STBTTAlignedQuad.malloc();
     private final FloatBuffer xb = memAllocFloat(1);
     private final FloatBuffer yb = memAllocFloat(1);
-
-    private int textura;
-
     private STBTTPackedchar.Buffer chardata;
     private boolean integer_align;
 
-    public FuenteTruetype(String archivo) {
-        this.textura = glGenTextures();
+    private FloatBuffer vertices;
+    private int numVertices;
+    private int textura;
+    private final RenderizadorOpenGL32 renderizador;
+
+    public FuenteTruetypeGL32(String archivo, RenderizadorOpenGL32 renderizador) {
+        this.renderizador = renderizador;
+
+        // Generamos una nueva textura
+        this.textura = GL32C.glGenTextures();
         this.chardata = STBTTPackedchar.malloc(6 * 128);
 
         try (STBTTPackContext pc = STBTTPackContext.malloc()) {
@@ -91,70 +99,90 @@ public class FuenteTruetype {
             chardata.clear();
             stbtt_PackEnd(pc);
 
-            glBindTexture(GL_TEXTURE_2D, textura);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, BITMAP_W, BITMAP_H, 0, GL_ALPHA, GL_UNSIGNED_BYTE, bitmap);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            GL32C.glBindTexture(GL32C.GL_TEXTURE_2D, textura);
+            GL32C.glTexImage2D(GL32C.GL_TEXTURE_2D, 0, GL32C.GL_ALPHA, BITMAP_W, BITMAP_H, 0, GL32C.GL_ALPHA, GL32C.GL_UNSIGNED_BYTE, bitmap);
+            GL32C.glTexParameteri(GL32C.GL_TEXTURE_2D, GL32C.GL_TEXTURE_MAG_FILTER, GL32C.GL_LINEAR);
+            GL32C.glTexParameteri(GL32C.GL_TEXTURE_2D, GL32C.GL_TEXTURE_MIN_FILTER, GL32C.GL_LINEAR);
+
+            // Creamos un FloatBuffer para guardar los datos de los vertices a dibujar
+            this.vertices = MemoryUtil.memAllocFloat(4096);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void iniciarDibujado() {
-        glDisable(GL_CULL_FACE);
-//        glDisable(GL_TEXTURE_2D);
-//        glDisable(GL_LIGHTING);
-        glDisable(GL_DEPTH_TEST);
-        
-//        glEnable(GL_BLEND);
-//        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    }
-    
-    public void terminarDibujado() {
-        
-    }
-    
-    private static void drawBoxTC(float x0, float y0, float x1, float y1, float s0, float t0, float s1, float t1) {
-        glTexCoord2f(s0, t0);
-        glVertex2f(x0, y0);
-        glTexCoord2f(s1, t0);
-        glVertex2f(x1, y0);
-        glTexCoord2f(s1, t1);
-        glVertex2f(x1, y1);
-        glTexCoord2f(s0, t1);
-        glVertex2f(x0, y1);
+    protected void crearVertices(float x1, float y1, float x2, float y2, float s1, float t1, float s2, float t2, Color c) {
+        if (vertices.remaining() < 7 * 6) {
+            // Necesitamos más espacio en el búfer, así que lo vaciamos
+            renderizador.flush(vertices, numVertices);
+            this.numVertices = 0;
+        }
+
+        float r = c.getRed();
+        float g = c.getGreen();
+        float b = c.getBlue();
+        float a = c.getAlpha();
+
+        vertices.put(x1).put(y1).put(r).put(g).put(b).put(a).put(s1).put(t1);
+        vertices.put(x1).put(y2).put(r).put(g).put(b).put(a).put(s1).put(t2);
+        vertices.put(x2).put(y2).put(r).put(g).put(b).put(a).put(s2).put(t2);
+
+        vertices.put(x1).put(y1).put(r).put(g).put(b).put(a).put(s1).put(t1);
+        vertices.put(x2).put(y2).put(r).put(g).put(b).put(a).put(s2).put(t2);
+        vertices.put(x2).put(y1).put(r).put(g).put(b).put(a).put(s2).put(t1);
+
+        numVertices += 6;
     }
 
+    @Override
     public void dibujarTexto(float x, float y, int font, Color color, String text) {
         xb.put(0, x);
         yb.put(0, y);
 
         chardata.position(font * 128);
 
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, textura);
-        glColor3f(color.getRed(), color.getGreen(), color.getBlue());
-        
-        glBegin(GL_QUADS);
+        GL32C.glDisable(GL32C.GL_CULL_FACE);
+        GL32C.glDisable(GL32C.GL_DEPTH_TEST);
+
+        GL32C.glEnable(GL32C.GL_TEXTURE_2D);
+        GL32C.glBindTexture(GL32C.GL_TEXTURE_2D, textura);
+
+        // Habilitamos las transparencias
+        GL32C.glEnable(GL_BLEND);
+        GL32C.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         for (int i = 0; i < text.length(); i++) {
             stbtt_GetPackedQuad(chardata, BITMAP_W, BITMAP_H, text.charAt(i), xb, yb, q, font == 0 && integer_align);
-            drawBoxTC(
+            crearVertices(
                     q.x0(), q.y0(), q.x1(), q.y1(),
-                    q.s0(), q.t0(), q.s1(), q.t1()
+                    q.s0(), q.t0(), q.s1(), q.t1(),
+                    color
             );
         }
-        glEnd();
+
+        // Enviamos a la GPU
+        renderizador.flush(vertices, numVertices);
+        this.numVertices = 0;
     }
 
-    public void terminar() {
-        GL.setCapabilities(null);
-
+    @Override
+    public void destruir() {
         chardata.free();
 
         memFree(yb);
         memFree(xb);
 
         q.free();
+    }
+
+    @Override
+    public void iniciarDibujado() {
+
+    }
+
+    @Override
+    public void terminarDibujado() {
+
     }
 
 }

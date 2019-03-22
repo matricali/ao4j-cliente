@@ -14,30 +14,37 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ar.net.argentum.cliente.motor.user;
-
-import ar.net.argentum.cliente.motor.gamedata.Objeto;
+package ar.net.argentum.cliente.mundo;
 
 /**
+ * Representa la orientacion hacia la que mira un personaje
  *
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */
-public class Inventario {
-    InventarioSlot objetos[];
-    
-    public Inventario(int huecos) {
-        this.objetos = new InventarioSlot[huecos];
+public enum Orientacion {
+    NORTE(1), ESTE(2), SUR(3), OESTE(4);
+    private final int valor;
+
+    private Orientacion(int valor) {
+        this.valor = valor;
     }
-    
-    public final InventarioSlot getSlot(int slot) {
-        return objetos[slot];
+
+    public int valor() {
+        return valor;
     }
-    
-    public void setSlot(int slot, InventarioSlot objeto) {
-        objetos[slot] = objeto;
-    }
-    
-    public final InventarioSlot[] getObjetos() {
-        return objetos;
+
+    /**
+     * Obtener orientacion desde un valor entero dado
+     *
+     * @param valor
+     * @return
+     */
+    public static Orientacion valueOf(int valor) {
+        for (Orientacion o : Orientacion.values()) {
+            if (o.valor == valor) {
+                return o;
+            }
+        }
+        throw new IllegalArgumentException("Orientacion invalida (" + valor + ")");
     }
 }

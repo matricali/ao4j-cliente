@@ -16,7 +16,8 @@
  */
 package ar.net.argentum.cliente.interfaz;
 
-import ar.net.argentum.cliente.motor.user.Usuario;
+import ar.net.argentum.cliente.motor.IInterfaz;
+import ar.net.argentum.cliente.juego.Usuario;
 import org.lwjgl.nuklear.*;
 import org.lwjgl.system.*;
 import static org.lwjgl.nuklear.Nuklear.*;

@@ -16,6 +16,7 @@
  */
 package ar.net.argentum.cliente.interfaz;
 
+import ar.net.argentum.cliente.motor.IInterfaz;
 import ar.net.argentum.cliente.interfaz.componentes.TextField;
 import org.lwjgl.nuklear.*;
 import static org.lwjgl.nuklear.Nuklear.*;

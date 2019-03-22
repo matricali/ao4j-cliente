@@ -14,10 +14,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ar.net.argentum.cliente.motor.gamedata;
+package ar.net.argentum.cliente.mundo;
+
+import ar.net.argentum.cliente.mundo.Posicion;
 
 /**
- * Representa una posicion especifica en el mundo Argentum Online.
+ * Representa una posicion especifica en el mundo de Argentum Online.
  *
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */

@@ -16,13 +16,8 @@
  */
 package ar.net.argentum.cliente.motor;
 
-import ar.net.argentum.cliente.motor.gamedata.AnimCuerpo;
-import ar.net.argentum.cliente.motor.gamedata.Animacion;
-import ar.net.argentum.cliente.motor.gamedata.AnimCabeza;
-import ar.net.argentum.cliente.motor.gamedata.Posicion;
-import ar.net.argentum.cliente.motor.gamedata.AnimEscudo;
-import ar.net.argentum.cliente.motor.gamedata.AnimArma;
-import ar.net.argentum.cliente.motor.user.Orientacion;
+import ar.net.argentum.cliente.mundo.Orientacion;
+import ar.net.argentum.cliente.mundo.Posicion;
 
 /**
  * Representa un personaje animado que posee cuerpo y cabeza y puede portar una
@@ -152,7 +147,7 @@ public class Personaje {
     }
 
     /**
-     * @return the cuerpo
+     * @return animacion del cuerpo
      */
     public AnimCuerpo getCuerpo() {
         return cuerpo;

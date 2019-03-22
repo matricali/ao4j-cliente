@@ -14,8 +14,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ar.net.argentum.cliente.motor;
+package ar.net.argentum.cliente.fuentes;
 
+import ar.net.argentum.cliente.motor.Color;
 import static ar.net.argentum.cliente.motor.Utils.ioResourceToByteBuffer;
 import java.io.File;
 import java.io.IOException;

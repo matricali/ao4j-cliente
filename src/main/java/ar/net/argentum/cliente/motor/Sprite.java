@@ -14,24 +14,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ar.net.argentum.cliente.motor.gamedata;
+package ar.net.argentum.cliente.motor;
 
 /**
- * Almacena las animaciones de un escudo en todas sus direcciones.
+ * Representa un grafico indexado de Argentum Online
+ * 
+ * @see TileEngine.bas.GrhData
  *
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */
-public class AnimEscudo extends AnimEquipable {
+public class Sprite {
 
-    public AnimEscudo() {
-        super();
-    }
-
-    public AnimEscudo(Sprite sprite, short a1, short a2, short a3, short a4, boolean iniciado) {
-        super(sprite, a1, a2, a3, a4, iniciado);
-    }
-
-    public AnimEscudo(AnimEquipable original) {
-        super(original);
+    public short sX;
+    public short sY;
+    public int fileNum;
+    public short pixelWidth;
+    public short pixelHeight;
+    public float tileWidth;
+    public float tileHeight;
+    public short numFrames;
+    public int frames[];
+    public float speed;
+    public boolean esValido() {
+        return fileNum != 0;
     }
 }

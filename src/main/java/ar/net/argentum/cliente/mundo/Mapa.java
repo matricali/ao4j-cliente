@@ -14,8 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ar.net.argentum.cliente.motor.gamedata;
+package ar.net.argentum.cliente.mundo;
 
+import ar.net.argentum.cliente.mundo.Posicion;
+import ar.net.argentum.cliente.Juego;
+import ar.net.argentum.cliente.motor.Animacion;
 import ar.net.argentum.general.UtilLegacy;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -28,7 +31,7 @@ import org.apache.log4j.Logger;
 public class Mapa {
 
     protected static final Logger LOGGER = Logger.getLogger(Mapa.class);
-    protected final GameData juego;
+    protected final Juego juego;
 
     protected Baldosa[][] baldosas;
     protected int numMapa;
@@ -37,7 +40,7 @@ public class Mapa {
     protected int minYBorder = 5;
     protected int maxYBorder = 90;
 
-    public Mapa(GameData juego, int numMapa) {
+    public Mapa(Juego juego, int numMapa) {
         LOGGER.info("Iniciando carga del mapa " + numMapa + "...");
 
         this.juego = juego;

@@ -16,11 +16,11 @@
  */
 package ar.net.argentum.cliente.interfaz;
 
+import ar.net.argentum.cliente.motor.IInterfaz;
 import ar.net.argentum.cliente.ClienteArgentum;
 import ar.net.argentum.cliente.interfaz.componentes.MessageBox;
 import ar.net.argentum.cliente.motor.Utils;
-import ar.net.argentum.cliente.motor.gamedata.GameData;
-import ar.net.argentum.cliente.motor.surface.ISurface;
+import ar.net.argentum.cliente.Juego;
 import java.io.*;
 import java.nio.*;
 import java.util.ArrayList;
@@ -39,6 +39,7 @@ import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.opengl.GL32C.*;
 import static org.lwjgl.stb.STBTruetype.*;
+import ar.net.argentum.cliente.motor.texturas.ITexturas;
 
 /**
  *
@@ -88,17 +89,17 @@ public class GUI implements IInterfaz {
     private int display_width;
     private int display_height;
 
-    private final ISurface texturas;
+    private final ITexturas texturas;
     private final IniciarSesion gui_iniciarSesion = new IniciarSesion(this);
     private final Consola gui_consola = new Consola(this);
     private final Personaje gui_personaje = new Personaje(this);
     private final Inventario gui_inventario = new Inventario(this);
 
-    private final GameData game;
+    private final Juego game;
     private Pantallas pantalla = Pantallas.INICIAR_SESION;
     private final List<MessageBox> mensajes;
 
-    public GUI(ClienteArgentum cliente, long ventana, GameData game, ISurface surface) {
+    public GUI(ClienteArgentum cliente, long ventana, Juego game, ITexturas surface) {
         this.cliente = cliente;
         this.ventana = ventana;
         this.game = game;
@@ -593,7 +594,7 @@ public class GUI implements IInterfaz {
     }
 
     @Override
-    public void keyEvents(long window, int key, int scancode, int action, int mods) {
+    public void entradaTeclado(long window, int key, int scancode, int action, int mods) {
         boolean press = action == GLFW_PRESS;
         switch (key) {
             case GLFW_KEY_ESCAPE:
@@ -659,11 +660,11 @@ public class GUI implements IInterfaz {
         }
     }
 
-    public GameData getJuego() {
+    public Juego getJuego() {
         return game;
     }
 
-    public ISurface getTexturas() {
+    public ITexturas getTexturas() {
         return texturas;
     }
 

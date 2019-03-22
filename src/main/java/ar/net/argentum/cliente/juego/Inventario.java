@@ -14,24 +14,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ar.net.argentum.cliente.motor.gamedata;
+package ar.net.argentum.cliente.juego;
 
 /**
- * Almacena las animaciones de un arma en todas sus direcciones.
  *
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */
-public class AnimArma extends AnimEquipable {
-
-    public AnimArma() {
-        super();
+public class Inventario {
+    InventarioSlot objetos[];
+    
+    public Inventario(int huecos) {
+        this.objetos = new InventarioSlot[huecos];
     }
-
-    public AnimArma(Sprite sprite, short a1, short a2, short a3, short a4, boolean iniciado) {
-        super(sprite, a1, a2, a3, a4, iniciado);
+    
+    public final InventarioSlot getSlot(int slot) {
+        return objetos[slot];
     }
-
-    public AnimArma(AnimEquipable original) {
-        super(original);
+    
+    public void setSlot(int slot, InventarioSlot objeto) {
+        objetos[slot] = objeto;
+    }
+    
+    public final InventarioSlot[] getObjetos() {
+        return objetos;
     }
 }

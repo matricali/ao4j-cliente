@@ -14,37 +14,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ar.net.argentum.cliente.motor.user;
+package ar.net.argentum.cliente.fuentes;
+
+import ar.net.argentum.cliente.motor.Color;
 
 /**
- * Representa la orientacion hacia la que mira un personaje
+ * Representa un objeto que puede dibujar textos
  *
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */
-public enum Orientacion {
-    NORTE(1), ESTE(2), SUR(3), OESTE(4);
-    private final int valor;
+public interface IFuente {
 
-    private Orientacion(int valor) {
-        this.valor = valor;
-    }
+    void dibujarTexto(float x, float y, int font, Color color, String texto);
 
-    public int valor() {
-        return valor;
-    }
+    void iniciarDibujado();
 
-    /**
-     * Obtener orientacion desde un valor entero dado
-     *
-     * @param valor
-     * @return
-     */
-    public static Orientacion valueOf(int valor) {
-        for (Orientacion o : Orientacion.values()) {
-            if (o.valor == valor) {
-                return o;
-            }
-        }
-        throw new IllegalArgumentException("Orientacion invalida (" + valor + ")");
-    }
+    void destruir();
+
+    void terminarDibujado();
+
 }

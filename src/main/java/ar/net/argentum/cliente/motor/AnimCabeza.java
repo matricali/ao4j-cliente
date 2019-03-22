@@ -14,31 +14,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ar.net.argentum.cliente.motor.gamedata;
+package ar.net.argentum.cliente.motor;
 
 /**
+ * Almacena las animaciones de una cabeza en todas sus direcciones.
  *
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */
-public class Sprite {
+public class AnimCabeza extends AnimEquipable {
 
-    public short sX;
-    public short sY;
-
-    public int fileNum;
-
-    public short pixelWidth;
-    public short pixelHeight;
-
-    public float tileWidth;
-    public float tileHeight;
-
-    public short numFrames;
-    public int frames[];
-
-    public float speed;
+    public AnimCabeza() {
+        super();
+    }
     
-    public boolean esValido() {
-        return fileNum != 0;
-    }  
+    public AnimCabeza(Sprite sprite, short a1, short a2, short a3, short a4, boolean iniciado) {
+        super(sprite, a1, a2, a3, a4, iniciado);
+    }
+    
+    public AnimCabeza(AnimEquipable original) {
+        super(original);
+    }
 }

@@ -14,7 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ar.net.argentum.cliente.motor.gamedata;
+package ar.net.argentum.cliente.mundo;
+
+import ar.net.argentum.cliente.mundo.Coordenada;
+import ar.net.argentum.cliente.juego.Objeto;
+import ar.net.argentum.cliente.motor.Animacion;
 
 /**
  * Representa un casillero del mapa

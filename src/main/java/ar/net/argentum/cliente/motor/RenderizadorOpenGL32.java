@@ -16,9 +16,7 @@
  */
 package ar.net.argentum.cliente.motor;
 
-import ar.net.argentum.cliente.motor.gamedata.Sprite;
-import ar.net.argentum.cliente.motor.surface.ISurface;
-import ar.net.argentum.cliente.motor.surface.Textura;
+import ar.net.argentum.cliente.motor.texturas.Textura;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -33,6 +31,7 @@ import org.lwjgl.opengl.GL32C;
 import static org.lwjgl.opengl.GL32C.*;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
+import ar.net.argentum.cliente.motor.texturas.ITexturas;
 
 /**
  * Clase que encapsula todo lo necesario para dibujar las texturas del juego en
@@ -42,7 +41,7 @@ import org.lwjgl.system.MemoryUtil;
  */
 public class RenderizadorOpenGL32 implements Renderizador {
 
-    protected final ISurface texturas;
+    protected final ITexturas texturas;
 
     protected long ventana;
     protected final int x;
@@ -60,7 +59,7 @@ public class RenderizadorOpenGL32 implements Renderizador {
     private int numVertices;
     private boolean dibujando;
 
-    public RenderizadorOpenGL32(long ventana, ISurface surfaces, int anchoVentana, int altoVentana, int x, int y, int ancho, int alto) {
+    public RenderizadorOpenGL32(long ventana, ITexturas surfaces, int anchoVentana, int altoVentana, int x, int y, int ancho, int alto) {
         this.ventana = ventana;
         this.texturas = surfaces;
         this.anchoVentana = anchoVentana;
@@ -355,11 +354,21 @@ public class RenderizadorOpenGL32 implements Renderizador {
 
         numVertices += 6;
     }
-
+    
     /**
      * Vacía los datos a la GPU para permitir que se procesen.
      */
     public void flush() {
+        flush(vertices, numVertices);
+        this.numVertices = 0;
+    }
+
+    /**
+     * Vacía los datos a la GPU para permitir que se procesen.
+     * @param vertices
+     * @param numVertices
+     */
+    public void flush(FloatBuffer vertices, int numVertices) {
         if (numVertices > 0) {
             vertices.flip();
 
@@ -380,7 +389,6 @@ public class RenderizadorOpenGL32 implements Renderizador {
 
             /* Clear vertex data for next batch */
             vertices.clear();
-            numVertices = 0;
         }
     }
 
