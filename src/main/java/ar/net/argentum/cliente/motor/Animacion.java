@@ -19,16 +19,35 @@ package ar.net.argentum.cliente.motor;
 import ar.net.argentum.cliente.Recursos;
 
 /**
+ * Una animacion que se puede dibujar
  *
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */
 public class Animacion {
 
+    /**
+     * Numero de sprite
+     */
     private short grhIndex;
+    /**
+     * Contador de cuadros
+     */
     private float frameCounter;
+    /**
+     * Velocidad
+     */
     protected float velocidad;
+    /**
+     * Iniciamos la animacion?
+     */
     private boolean started;
+    /**
+     * Cantidad de repeticiones restantes de la animacion
+     */
     private int repeticiones;
+    /**
+     * Angulo, actualmente en desuso
+     */
     private final float angulo;
 
     public Animacion(short grhindex, boolean iniciado) {
@@ -46,6 +65,7 @@ public class Animacion {
         this.grhIndex = grhindex;
 
         if (iniciado) {
+            // Si el sprite tiene un solo cuadro no hay animacion
             this.started = sprite.numFrames > 1;
         } else {
             if (sprite.numFrames == 1) {
@@ -99,6 +119,11 @@ public class Animacion {
         return Recursos.getSprite(grhIndex);
     }
 
+    /**
+     * Calcula el cuadro que vamos a dibujar.
+     *
+     * @param timerElapsedTime
+     */
     public void animar(long timerElapsedTime) {
         this.frameCounter = frameCounter + (timerElapsedTime * getSprite().numFrames / getVelocidad());
         if (frameCounter > getSprite().numFrames) {
@@ -113,18 +138,26 @@ public class Animacion {
         }
     }
 
+    /**
+     * Obtiene el Sprite del cuadro actual.
+     *
+     * @return
+     */
     public Sprite getCuadroActual() {
         int currentGrhIndex = getSprite().frames[(int) (frameCounter)];
         return Recursos.getSprite(currentGrhIndex);
     }
 
     /**
-     * @return the velocidad
+     * @return Velocidad de la animacion.
      */
     public float getVelocidad() {
         return velocidad;
     }
 
+    /**
+     * Reiniciar la animacion al primer cuadro.
+     */
     public void reiniciar() {
         this.started = false;
         this.frameCounter = 1;
