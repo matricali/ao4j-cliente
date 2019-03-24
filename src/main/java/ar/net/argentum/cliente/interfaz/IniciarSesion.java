@@ -34,12 +34,6 @@ public class IniciarSesion {
     protected final TextField usuario;
     protected final TextField password;
 
-    NkColorf background = NkColorf.create()
-            .r(0.10f)
-            .g(0.18f)
-            .b(0.24f)
-            .a(1.0f);
-
     public IniciarSesion(IInterfaz padre) {
         this.padre = padre;
         this.usuario = new TextField(16, false);
