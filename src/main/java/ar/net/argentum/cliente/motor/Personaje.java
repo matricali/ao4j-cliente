@@ -37,6 +37,7 @@ public class Personaje {
     protected AnimCabeza casco;
     protected AnimArma arma;
     protected AnimEscudo escudo;
+    protected AnimEfecto efecto;
 
     byte Moving;
     protected short scrollDirectionX;
@@ -270,5 +271,19 @@ public class Personaje {
      */
     public void setOrientacion(Orientacion orientacion) {
         this.orientacion = orientacion;
+    }
+
+    /**
+     * @return Animacion activa en el personaje
+     */
+    public AnimEfecto getEfecto() {
+        return efecto;
+    }
+
+    /**
+     * @param efecto Establece una animacion sobre el personaje
+     */
+    public void setEfecto(AnimEfecto efecto) {
+        this.efecto = efecto;
     }
 }

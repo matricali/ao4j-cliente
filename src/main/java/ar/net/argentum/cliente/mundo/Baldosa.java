@@ -16,7 +16,6 @@
  */
 package ar.net.argentum.cliente.mundo;
 
-import ar.net.argentum.cliente.mundo.Coordenada;
 import ar.net.argentum.cliente.juego.Objeto;
 import ar.net.argentum.cliente.motor.Animacion;
 
@@ -44,7 +43,7 @@ public class Baldosa {
     /**
      * Animacion del efecto
      */
-    protected Animacion fx;
+    protected Animacion efecto;
     /**
      * Objeto arrojado en el suelo
      */
@@ -80,7 +79,7 @@ public class Baldosa {
         capa[3] = new Animacion();
         capa[4] = new Animacion();
         objgrh = new Animacion();
-        fx = new Animacion();
+        efecto = new Animacion();
     }
 
     /**
@@ -211,5 +210,19 @@ public class Baldosa {
 //                        Map_CheckWater = False
 //                  End If
         return false;
+    }
+
+    /**
+     * @return Animacion del efecto activo en esta baldosa
+     */
+    public Animacion getEfecto() {
+        return efecto;
+    }
+
+    /**
+     * @param efecto Animacion del efecto a activar en esta baldosa
+     */
+    public void setEfecto(Animacion efecto) {
+        this.efecto = efecto;
     }
 }

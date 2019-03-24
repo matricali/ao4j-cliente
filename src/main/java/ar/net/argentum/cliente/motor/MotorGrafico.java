@@ -631,6 +631,12 @@ public class MotorGrafico {
                     dibujarAnimacion(juego.getMapa().getBaldosa(x, y).getCapa(3), xd,
                             yd, true, true, false, ambientcolor);
                 }
+
+                // Dibujamos el efecto en la baldosa
+                if (juego.getMapa().getBaldosa(x, y).getEfecto() != null) {
+                    dibujarAnimacion(juego.getMapa().getBaldosa(x, y).getEfecto(), xd,
+                            yd, true, true, true, ambientcolor);
+                }
                 screenX++;
             }
             screenY++;
@@ -675,8 +681,6 @@ public class MotorGrafico {
      */
     public void dibujarPersonaje(Personaje personaje, int pixelOffsetX, int pixelOffsetY) {
         boolean moved = false;
-        int Pos;
-        String line;
 
         if (personaje.estaMoviendose()) {
             if (personaje.getScrollDirectionX() != 0) {
@@ -765,6 +769,16 @@ public class MotorGrafico {
                 dibujarAnimacion(personaje.getCuerpo().getAnimacion(personaje.getOrientacion()),
                         pixelOffsetX, pixelOffsetY, true, true, false, ambientcolor);
             }
+        }
+
+        // Dibujamos el efecto sobre el personaje
+        AnimEfecto efecto = personaje.getEfecto();
+        if (efecto != null && efecto.getAnimacion().esValido()) {
+            dibujarAnimacion(
+                    efecto.getAnimacion(),
+                    pixelOffsetX + efecto.getOffsetX(),
+                    pixelOffsetY + efecto.getOffsetY(),
+                    true, true, true, ambientcolor);
         }
     }
 

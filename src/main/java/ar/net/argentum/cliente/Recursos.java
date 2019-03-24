@@ -20,6 +20,7 @@ import static ar.net.argentum.cliente.motor.MotorGrafico.LOGGER;
 import ar.net.argentum.cliente.motor.AnimArma;
 import ar.net.argentum.cliente.motor.AnimCabeza;
 import ar.net.argentum.cliente.motor.AnimCuerpo;
+import ar.net.argentum.cliente.motor.AnimEfecto;
 import ar.net.argentum.cliente.motor.AnimEscudo;
 import ar.net.argentum.cliente.motor.Sprite;
 import ar.net.argentum.general.UtilLegacy;
@@ -37,6 +38,7 @@ public abstract class Recursos {
     private static AnimCabeza[] animCascos;
     private static AnimArma[] animArmas;
     private static AnimEscudo[] animEscudos;
+    private static AnimEfecto[] animEfectos;
     private static Sprite[] graficos;
     private static int cantidadGraficos;
 
@@ -49,6 +51,7 @@ public abstract class Recursos {
         cargarCascos("recursos/datos/cascos.ind");
         cargarCuerpos("recursos/datos/cuerpos.ind");
         cargarEscudos("recursos/datos/escudos.ind");
+        cargarEfectos("recursos/datos/efectos.ind");
     }
 
     public static void cargarGraficos(String archivo) {
@@ -298,6 +301,32 @@ public abstract class Recursos {
         }
     }
 
+    public static void cargarEfectos(String archivo) {
+        try {
+            try (RandomAccessFile f = new RandomAccessFile(archivo, "r")) {
+
+                byte[] cabecera = new byte[263];
+                f.read(cabecera);
+
+                int numEfectos = UtilLegacy.bigToLittle(f.readShort());
+                animEfectos = new AnimEfecto[numEfectos + 1];
+
+                short a1, a2, a3, a4;
+                for (int i = 1; i <= numEfectos; i++) {
+                    a1 = UtilLegacy.bigToLittle(f.readShort());
+                    a2 = UtilLegacy.bigToLittle(f.readShort());
+                    a3 = UtilLegacy.bigToLittle(f.readShort());
+
+                    if (a1 != 0) {
+                        animEfectos[i] = new AnimEfecto(a1, a2, a3);
+                    }
+                }
+            }
+        } catch (IOException ex) {
+            LOGGER.fatal(null, ex);
+        }
+    }
+
     /**
      * Obtiene un grafico
      *
@@ -326,6 +355,10 @@ public abstract class Recursos {
 
     public static AnimEscudo getEscudo(int id) {
         return animEscudos[id];
+    }
+
+    public static AnimEfecto getEfecto(int id) {
+        return animEfectos[id];
     }
 
 }
