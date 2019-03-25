@@ -1,6 +1,5 @@
 package ar.net.argentum.cliente.juego;
 
-import ar.net.argentum.cliente.juego.Inventario;
 import ar.net.argentum.cliente.Juego;
 import ar.net.argentum.cliente.motor.Animacion;
 import ar.net.argentum.cliente.mundo.Posicion;
