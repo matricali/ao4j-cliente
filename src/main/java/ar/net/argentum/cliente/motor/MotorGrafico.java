@@ -811,6 +811,10 @@ public class MotorGrafico {
 
         if (cliente.isJugando()) {
 
+            if (key == GLFW_KEY_F7 && action != GLFW_RELEASE) {
+                cliente.getConexion().enviarChat("/meditar");
+            }
+
             if (key == GLFW_KEY_RIGHT && action != GLFW_RELEASE) {
                 if (userMoving) {
                     return;
