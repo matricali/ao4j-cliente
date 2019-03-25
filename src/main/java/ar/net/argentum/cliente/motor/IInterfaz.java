@@ -31,7 +31,7 @@ public interface IInterfaz {
 
     public void setPantalla(Pantallas pantalla);
 
-    public void dibujarInterfaz();
+    public void dibujar();
 
     public void terminar();
 

@@ -296,7 +296,7 @@ public class GUI implements IInterfaz {
     }
 
     @Override
-    public void dibujarInterfaz() {
+    public void dibujar() {
         // Eventos de entrada
         try (MemoryStack stack = stackPush()) {
             IntBuffer w = stack.mallocInt(1);

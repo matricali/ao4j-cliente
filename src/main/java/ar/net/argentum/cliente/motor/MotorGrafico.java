@@ -285,14 +285,12 @@ public class MotorGrafico {
             render.finalizarDibujado();
         }
 
-        // Dibujamos la interfaz gráfica
-        interfaz.dibujarInterfaz();
-
         dibujarTexto(22, 22, 0, Color.BLACK, FPS + " FPS");
         dibujarTexto(20, 20, 0, Color.WHITE, FPS + " FPS");
 
         // Actualizamos los events de entrada (teclado y mouse)
         glfwPollEvents();
+        interfaz.dibujar();
 
         // Dibujamos el buffer en la ventana
         glfwSwapBuffers(ventana);
