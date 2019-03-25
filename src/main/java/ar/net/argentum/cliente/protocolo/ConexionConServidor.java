@@ -199,6 +199,10 @@ public class ConexionConServidor extends Thread {
                     recibirPersonajeQuitar(dis);
                     break;
 
+                case PQT_PERSONAJE_ANIMACION:
+                    recibirPersonajeAnimacion(dis);
+                    break;
+
                 default:
                     LOGGER.fatal("Recibimos un paquete que no supimos manejar (" + tipoPaquete + ")");
                     terminar();
@@ -398,6 +402,25 @@ public class ConexionConServidor extends Thread {
                     cabeza, cuerpo, casco, arma, escudo);
 
             cliente.getJuego().getMapa().getBaldosa(x, y).setCharindex(charindex);
+        } catch (IOException ex) {
+            LOGGER.fatal(null, ex);
+        }
+    }
+
+    public void recibirPersonajeAnimacion(DataInputStream dis) {
+        try {
+            int charindex = dis.readInt();
+            int efecto = dis.readInt();
+            int repeticiones = dis.readInt();
+
+            LOGGER.debug("PQT_PERSONAJE_ANIMACION<<" + charindex
+                    + "<<" + efecto + "<<" + repeticiones);
+            
+            if (efecto == 0) {
+                cliente.getMotorGrafico().getPersonaje(charindex).setEfecto(null);
+            } else {
+                cliente.getMotorGrafico().getPersonaje(charindex).setEfecto(efecto);
+            }
         } catch (IOException ex) {
             LOGGER.fatal(null, ex);
         }

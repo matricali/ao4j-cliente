@@ -16,6 +16,7 @@
  */
 package ar.net.argentum.cliente.motor;
 
+import ar.net.argentum.cliente.Recursos;
 import ar.net.argentum.cliente.mundo.Orientacion;
 import ar.net.argentum.cliente.mundo.Posicion;
 
@@ -281,9 +282,16 @@ public class Personaje {
     }
 
     /**
-     * @param efecto Establece una animacion sobre el personaje
+     * @param animacion Establece una animacion sobre el personaje
      */
-    public void setEfecto(AnimEfecto efecto) {
-        this.efecto = efecto;
+    public void setEfecto(AnimEfecto animacion) {
+        this.efecto = animacion;
+    }
+
+    /**
+     * @param idEfecto Establece una animacion sobre el personaje
+     */
+    public void setEfecto(int idEfecto) {
+        this.efecto = new AnimEfecto(Recursos.getEfecto(idEfecto));
     }
 }
