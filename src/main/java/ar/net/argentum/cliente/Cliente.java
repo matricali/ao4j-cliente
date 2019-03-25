@@ -26,12 +26,13 @@ import org.apache.log4j.Logger;
 
 import org.lwjgl.glfw.*;
 import org.lwjgl.system.*;
+import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.GLFW.*;
-import org.lwjgl.opengl.GL;
 import static org.lwjgl.system.MemoryUtil.*;
 
 /**
+ * Cliente de Argentum Online
  *
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */
