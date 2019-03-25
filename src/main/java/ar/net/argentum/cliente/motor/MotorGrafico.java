@@ -247,7 +247,6 @@ public class MotorGrafico {
 
         this.corriendo = true;
         cliente.setJugando(false);
-        cliente.conectar("localhost", 7666, "rasta", "1");
 
         loop();
         destruir();
