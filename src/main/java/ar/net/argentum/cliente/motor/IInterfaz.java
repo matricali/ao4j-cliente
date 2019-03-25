@@ -22,6 +22,8 @@ import ar.net.argentum.cliente.interfaz.Pantallas;
 import ar.net.argentum.cliente.motor.texturas.ITexturas;
 
 /**
+ * Representa una interfaz grafica que posee varios estados (o "pantallas") y se
+ * puede dibujar. Recibe eventos de teclado y de mouse.
  *
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */
@@ -35,9 +37,28 @@ public interface IInterfaz {
 
     public void terminar();
 
-    public void entradaTeclado(long window, int key, int scancode, int action, int mods);
+    /**
+     * Procesar los eventos de teclado
+     *
+     * @param window
+     * @param key
+     * @param scancode
+     * @param action
+     * @param mods
+     */
+    public void eventoTeclado(long window, int key, int scancode, int action, int mods);
 
-    public void mouseEvents(long window, int x, int y, int button, int action, int mods);
+    /**
+     * Procesar los eventos de mouse
+     *
+     * @param window
+     * @param x
+     * @param y
+     * @param button
+     * @param action
+     * @param mods
+     */
+    public void eventoMouse(long window, int x, int y, int button, int action, int mods);
 
     public Juego getJuego();
 

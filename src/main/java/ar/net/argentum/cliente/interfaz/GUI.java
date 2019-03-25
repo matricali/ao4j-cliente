@@ -317,6 +317,20 @@ public class GUI implements IInterfaz {
         // invoked during this call.
         glfwPollEvents();
 
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            DoubleBuffer cx = stack.mallocDouble(1);
+            DoubleBuffer cy = stack.mallocDouble(1);
+
+            glfwGetCursorPos(ventana, cx, cy);
+
+            int x = (int) cx.get(0);
+            int y = (int) cy.get(0);
+
+            nk_input_button(ctx, NK_BUTTON_LEFT, x, y, glfwGetMouseButton(ventana, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
+            nk_input_button(ctx, NK_BUTTON_MIDDLE, x, y, glfwGetMouseButton(ventana, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS);
+            nk_input_button(ctx, NK_BUTTON_RIGHT, x, y, glfwGetMouseButton(ventana, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS);
+        }
+
         NkMouse mouse = ctx.input().mouse();
         if (mouse.grab()) {
             glfwSetInputMode(ventana, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
@@ -594,7 +608,7 @@ public class GUI implements IInterfaz {
     }
 
     @Override
-    public void entradaTeclado(long window, int key, int scancode, int action, int mods) {
+    public void eventoTeclado(long window, int key, int scancode, int action, int mods) {
         boolean press = action == GLFW_PRESS;
         switch (key) {
             case GLFW_KEY_ESCAPE:
@@ -674,19 +688,11 @@ public class GUI implements IInterfaz {
     }
 
     @Override
-    public void mouseEvents(long window, int y, int x, int button, int action, int mods) {
-        // Mapeamos los valores de GLFW a Nuklear
-        int nkButton;
-        switch (button) {
-            case GLFW_MOUSE_BUTTON_RIGHT:
-                nkButton = NK_BUTTON_RIGHT;
-                break;
-            case GLFW_MOUSE_BUTTON_MIDDLE:
-                nkButton = NK_BUTTON_MIDDLE;
-                break;
-            default:
-                nkButton = NK_BUTTON_LEFT;
-        }
-        nk_input_button(ctx, nkButton, x, y, action == GLFW_PRESS);
+    public void eventoMouse(long window, int y, int x, int button, int action, int mods) {
+        /**
+         * No hacemos nada porque ahora los eventos del mouse para Nuklear ahora
+         * los procesamos en bucle y no por eventos.
+         */
+    }
     }
 }

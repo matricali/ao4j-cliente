@@ -288,8 +288,7 @@ public class MotorGrafico {
         dibujarTexto(22, 22, 0, Color.BLACK, FPS + " FPS");
         dibujarTexto(20, 20, 0, Color.WHITE, FPS + " FPS");
 
-        // Actualizamos los events de entrada (teclado y mouse)
-        glfwPollEvents();
+        // Dibujamos la interfaz gráfica y tambien procesamos el teclado y mouse
         interfaz.dibujar();
 
         // Dibujamos el buffer en la ventana
@@ -808,6 +807,9 @@ public class MotorGrafico {
      * @param mods
      */
     public void entradaTeclado(long window, int key, int scancode, int action, int mods) {
+        // También procesamos los eventos de teclado de la interfaz grafica
+        interfaz.eventoTeclado(window, key, scancode, action, mods);
+
         if (cliente.isJugando()) {
 
             if (key == GLFW_KEY_RIGHT && action != GLFW_RELEASE) {
@@ -843,8 +845,6 @@ public class MotorGrafico {
                 juego.usuarioGolpea();
             }
         }
-
-        interfaz.entradaTeclado(window, key, scancode, action, mods);
     }
 
     /**
@@ -858,6 +858,9 @@ public class MotorGrafico {
      * @param mods
      */
     public void entradaMouse(long window, int x, int y, int button, int action, int mods) {
+        // Procesamos los eventos de la interfaz grafica
+        interfaz.eventoMouse(window, x, y, button, action, mods);
+
         // Los eventos del juego los procesamos solo si el usuario esta jugando
         if (cliente.isJugando()) {
             if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
@@ -869,11 +872,9 @@ public class MotorGrafico {
                     int tX = juego.getUsuario().getPosicion().x() + cX / TILE_PIXEL_WIDTH - anchoEnBaldosas / 2;
                     int tY = juego.getUsuario().getPosicion().y() + cY / TILE_PIXEL_HEIGHT - altoEnBaldosas / 2;
                     cliente.getConexion().enviarClick(tX, tY);
-
                 }
             }
         }
-        interfaz.mouseEvents(window, x, y, button, action, mods);
     }
 
     /**
