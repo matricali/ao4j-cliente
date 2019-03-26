@@ -43,10 +43,19 @@ public class Personaje {
             if (nk_begin(
                     ctx,
                     "Personaje",
-                    nk_rect(x, y, 225, 180, rect),
+                    nk_rect(x, y, 225, 250, rect),
                     NK_WINDOW_BORDER
             )) {
                 Usuario user = padre.getJuego().getUsuario();
+
+                NkColor oldColor = NkColor.mallocStack(stack);
+                oldColor.set(ctx.style().progress().active().data().color());
+
+                NkColor rojo = NkColor.mallocStack().set((byte) 0xFF, (byte) 0x00, (byte) 0x00, (byte) 0xFF);
+                NkColor celeste = NkColor.mallocStack().set((byte) 0x00, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF);
+                NkColor amarillo = NkColor.mallocStack().set((byte) 0xFF, (byte) 0xFF, (byte) 0x00, (byte) 0xFF);
+                NkColor verde = NkColor.mallocStack().set((byte) 0x00, (byte) 0xFF, (byte) 0x00, (byte) 0xFF);
+                NkColor azul = NkColor.mallocStack().set((byte) 0x00, (byte) 0x00, (byte) 0xFF, (byte) 0xFF);
 
                 nk_layout_row_dynamic(ctx, 25, 1);
                 {
@@ -54,7 +63,20 @@ public class Personaje {
                     nk_label(ctx, user.getNombre(), NK_TEXT_CENTERED);
                 }
 
-                nk_layout_row_dynamic(ctx, 20, 3);
+                nk_layout_row_dynamic(ctx, 18, 1);
+                {
+                    // Nivel y experiencia
+                    nk_label(ctx, "Nivel " + user.getNivel() + " [" + user.getExperienciaActual() + "/" + user.getExperienciaSiguienteNivel() + "]", NK_TEXT_CENTERED);
+                }
+
+                nk_layout_row_dynamic(ctx, 25, 1);
+                {
+                    // Barra de experiencia
+                    ctx.style().progress().cursor_normal().data().color(verde);
+                    nk_prog(ctx, user.getExperienciaActual(), user.getExperienciaSiguienteNivel(), false);
+                }
+
+                nk_layout_row_dynamic(ctx, 25, 3);
                 {
                     // Botones
                     if (nk_button_label(ctx, "Habilidades")) {
@@ -70,16 +92,6 @@ public class Personaje {
 
                 nk_layout_row_dynamic(ctx, 16, 1);
                 {
-
-                    NkColor oldColor = NkColor.mallocStack(stack);
-                    oldColor.set(ctx.style().progress().active().data().color());
-
-                    NkColor rojo = NkColor.mallocStack().set((byte) 0xFF, (byte) 0x00, (byte) 0x00, (byte) 0xFF);
-                    NkColor celeste = NkColor.mallocStack().set((byte) 0x00, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF);
-                    NkColor amarillo = NkColor.mallocStack().set((byte) 0xFF, (byte) 0xFF, (byte) 0x00, (byte) 0xFF);
-                    NkColor verde = NkColor.mallocStack().set((byte) 0x00, (byte) 0xFF, (byte) 0x00, (byte) 0xFF);
-                    NkColor azul = NkColor.mallocStack().set((byte) 0x00, (byte) 0x00, (byte) 0xFF, (byte) 0xFF);
-
                     // Estilo de los progressbar
                     ctx.style().progress().border(0f);
 

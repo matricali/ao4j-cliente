@@ -57,6 +57,7 @@ public class ConexionConServidor extends Thread {
     protected static final byte PQT_PERSONAJE_QUITAR = 0x16;
     protected static final byte PQT_CLICK = 0x17;
     protected static final byte PQT_USUARIO_GOLPEA = 0x18;
+    protected static final byte PQT_USUARIO_EXPERIENCIA = 0x19;
 
     protected static final Logger LOGGER = Logger.getLogger(ConexionConServidor.class.getName());
     private final ClienteArgentum cliente;
@@ -181,6 +182,11 @@ public class ConexionConServidor extends Thread {
                 case PQT_USUARIO_STATS:
                     // Actualizar slot de inventario
                     recibirUsuarioStats(dis);
+                    break;
+                    
+                case PQT_USUARIO_EXPERIENCIA:
+                    // Actualizar experiencia del usuario
+                    recibirUsuarioExperiencia(dis);
                     break;
 
                 case PQT_PERSONAJE_CREAR:
@@ -361,6 +367,17 @@ public class ConexionConServidor extends Thread {
             // Sed
             user.setMinSed(dis.readInt());
             user.setMaxSed(dis.readInt());
+        } catch (IOException ex) {
+            LOGGER.fatal(null, ex);
+        }
+    }
+    
+    public void recibirUsuarioExperiencia(DataInputStream dis) {
+        try {
+            Usuario user = cliente.getJuego().getUsuario();
+            user.setNivel(dis.readInt());
+            user.setExperienciaActual(dis.readInt());
+            user.setExperienciaSiguienteNivel(dis.readInt());
         } catch (IOException ex) {
             LOGGER.fatal(null, ex);
         }

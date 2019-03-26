@@ -353,7 +353,7 @@ public class GUI implements IInterfaz {
         if (getPantalla() == Pantallas.JUGAR) {
             gui_consola.layout(ctx, 15, 15);
             gui_personaje.layout(ctx, 559, 15);
-            gui_inventario.layout(ctx, 559, 195);
+            gui_inventario.layout(ctx, 559, 265);
         }
 
         // Dibujamos los mensajes emergentes

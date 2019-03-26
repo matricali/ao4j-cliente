@@ -20,6 +20,10 @@ public class Usuario {
     protected Posicion posicion = new Posicion();
     protected Inventario inventario;
 
+    protected int nivel;
+    protected int experienciaActual;
+    protected int experienciaSiguienteNivel;
+
     protected int minHP;
     protected int maxHP;
     protected int minMana;
@@ -246,5 +250,47 @@ public class Usuario {
      */
     public void setParalizado(boolean paralizado) {
         this.paralizado = paralizado;
+    }
+
+    /**
+     * @return Nivel actual
+     */
+    public int getNivel() {
+        return nivel;
+    }
+
+    /**
+     * @param nivel Nuevo nivel
+     */
+    public void setNivel(int nivel) {
+        this.nivel = nivel;
+    }
+
+    /**
+     * @return Puntos de experiencia
+     */
+    public int getExperienciaActual() {
+        return experienciaActual;
+    }
+
+    /**
+     * @param exp Puntos de experiencia
+     */
+    public void setExperienciaActual(int exp) {
+        this.experienciaActual = exp;
+    }
+
+    /**
+     * @return Experiencia necesaria para pasar la siguiente nivel
+     */
+    public int getExperienciaSiguienteNivel() {
+        return experienciaSiguienteNivel;
+    }
+
+    /**
+     * @param exp Experiencia necesaria para pasar la siguiente nivel
+     */
+    public void setExperienciaSiguienteNivel(int exp) {
+        this.experienciaSiguienteNivel = exp;
     }
 }
