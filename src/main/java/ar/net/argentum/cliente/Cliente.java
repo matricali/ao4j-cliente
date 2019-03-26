@@ -129,8 +129,13 @@ public class Cliente implements ClienteArgentum {
         this.keyCallback = new GLFWKeyCallback() {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
-                if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+                if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
+                    if (isJugando()) {
+                        conexion.enviarChat("/salir");
+                        return;
+                    }
                     glfwSetWindowShouldClose(window, true);
+                    return;
                 }
 
                 motor.entradaTeclado(window, key, scancode, action, mods);
