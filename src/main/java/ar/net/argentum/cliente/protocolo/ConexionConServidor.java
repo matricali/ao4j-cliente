@@ -24,6 +24,7 @@ import ar.net.argentum.cliente.juego.InventarioSlot;
 import ar.net.argentum.cliente.juego.Usuario;
 import ar.net.argentum.cliente.mundo.Baldosa;
 import ar.net.argentum.cliente.mundo.Orientacion;
+import ar.net.argentum.cliente.sonido.Sonido;
 import java.awt.HeadlessException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -58,6 +59,7 @@ public class ConexionConServidor extends Thread {
     protected static final byte PQT_CLICK = 0x17;
     protected static final byte PQT_USUARIO_GOLPEA = 0x18;
     protected static final byte PQT_USUARIO_EXPERIENCIA = 0x19;
+    protected static final byte PQT_MUNDO_REPRODUCIR_SONIDO = 0x21;
 
     protected static final Logger LOGGER = Logger.getLogger(ConexionConServidor.class.getName());
     private final ClienteArgentum cliente;
@@ -207,6 +209,10 @@ public class ConexionConServidor extends Thread {
 
                 case PQT_PERSONAJE_ANIMACION:
                     recibirPersonajeAnimacion(dis);
+                    break;
+
+                case PQT_MUNDO_REPRODUCIR_SONIDO:
+                    recibirMundoReproducirSonido(dis);
                     break;
 
                 default:
@@ -486,6 +492,21 @@ public class ConexionConServidor extends Thread {
                     + "<<" + heading);
 
             cliente.getMotorGrafico().personajeDarPaso(charindex, Orientacion.valueOf(heading));
+        } catch (IOException ex) {
+            LOGGER.fatal(null, ex);
+        }
+    }
+
+    public void recibirMundoReproducirSonido(DataInputStream dis) {
+        try {
+            int sonido = dis.readInt();
+            int x = dis.readInt();
+            int y = dis.readInt();
+
+            LOGGER.debug("PQT_MUNDO_REPRODUCIR_SONIDO<<" + sonido
+                    + "<<" + x + "<<" + y);
+
+            Sonido.reproducirSonido(sonido, x, y);
         } catch (IOException ex) {
             LOGGER.fatal(null, ex);
         }

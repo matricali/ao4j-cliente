@@ -19,6 +19,7 @@ package ar.net.argentum.cliente;
 import ar.net.argentum.cliente.motor.IInterfaz;
 import ar.net.argentum.cliente.motor.MotorGrafico;
 import ar.net.argentum.cliente.protocolo.ConexionConServidor;
+import ar.net.argentum.cliente.sonido.Sonido;
 import java.io.IOException;
 import java.nio.DoubleBuffer;
 import org.apache.log4j.BasicConfigurator;
@@ -168,6 +169,9 @@ public class Cliente implements ClienteArgentum {
 
         this.juego = new Juego(this);
 
+        // Iniciamos el sonido
+        Sonido.iniciar();
+
         // Iniciamos la carga de los recursos del juego
         Recursos.cargar();
 
@@ -194,6 +198,9 @@ public class Cliente implements ClienteArgentum {
         glfwTerminate();
 
         errorCallback.free();
+
+        // Destruimos el contexto de sonido
+        Sonido.destruir();
     }
 
     @Override
