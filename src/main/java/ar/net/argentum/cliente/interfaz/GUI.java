@@ -16,7 +16,6 @@
  */
 package ar.net.argentum.cliente.interfaz;
 
-import ar.net.argentum.cliente.motor.IInterfaz;
 import ar.net.argentum.cliente.ClienteArgentum;
 import ar.net.argentum.cliente.interfaz.componentes.MessageBox;
 import ar.net.argentum.cliente.motor.Utils;
@@ -40,6 +39,7 @@ import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.opengl.GL32C.*;
 import static org.lwjgl.stb.STBTruetype.*;
 import ar.net.argentum.cliente.motor.texturas.ITexturas;
+import ar.net.argentum.cliente.motor.IInterfaz;
 
 /**
  *
@@ -184,7 +184,7 @@ public class GUI implements IInterfaz {
                 .g((byte) 0x00)
                 .b((byte) 0x00)
                 .a((byte) 0x20);
-        
+
         ctx.style().window().fixed_background().data().color(fondo);
         ctx.style().edit().normal().data().color(fondo);
         ctx.style().window().border(0);
@@ -671,10 +671,12 @@ public class GUI implements IInterfaz {
         }
     }
 
+    @Override
     public Juego getJuego() {
         return game;
     }
 
+    @Override
     public ITexturas getTexturas() {
         return texturas;
     }
@@ -690,6 +692,5 @@ public class GUI implements IInterfaz {
          * No hacemos nada porque ahora los eventos del mouse para Nuklear ahora
          * los procesamos en bucle y no por eventos.
          */
-    }
     }
 }
