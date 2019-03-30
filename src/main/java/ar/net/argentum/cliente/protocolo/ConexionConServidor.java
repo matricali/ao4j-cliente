@@ -19,7 +19,6 @@ package ar.net.argentum.cliente.protocolo;
 import ar.net.argentum.cliente.ClienteArgentum;
 import ar.net.argentum.cliente.interfaz.Pantallas;
 import ar.net.argentum.cliente.motor.Animacion;
-import ar.net.argentum.cliente.motor.Personaje;
 import ar.net.argentum.cliente.juego.InventarioSlot;
 import ar.net.argentum.cliente.juego.Usuario;
 import ar.net.argentum.cliente.mundo.Baldosa;
@@ -59,6 +58,7 @@ public class ConexionConServidor extends Thread {
     protected static final byte PQT_CLICK = 0x17;
     protected static final byte PQT_USUARIO_GOLPEA = 0x18;
     protected static final byte PQT_USUARIO_EXPERIENCIA = 0x19;
+    protected static final byte PQT_USUARIO_EQUIPAR_SLOT = 0x20;
     protected static final byte PQT_MUNDO_REPRODUCIR_SONIDO = 0x21;
 
     protected static final Logger LOGGER = Logger.getLogger(ConexionConServidor.class.getName());
@@ -185,7 +185,7 @@ public class ConexionConServidor extends Thread {
                     // Actualizar slot de inventario
                     recibirUsuarioStats(dis);
                     break;
-                    
+
                 case PQT_USUARIO_EXPERIENCIA:
                     // Actualizar experiencia del usuario
                     recibirUsuarioExperiencia(dis);
@@ -377,7 +377,7 @@ public class ConexionConServidor extends Thread {
             LOGGER.fatal(null, ex);
         }
     }
-    
+
     public void recibirUsuarioExperiencia(DataInputStream dis) {
         try {
             Usuario user = cliente.getJuego().getUsuario();
@@ -438,7 +438,7 @@ public class ConexionConServidor extends Thread {
 
             LOGGER.debug("PQT_PERSONAJE_ANIMACION<<" + charindex
                     + "<<" + efecto + "<<" + repeticiones);
-            
+
             if (efecto == 0) {
                 cliente.getMotorGrafico().getPersonaje(charindex).setEfecto(null);
             } else {
@@ -536,6 +536,16 @@ public class ConexionConServidor extends Thread {
         LOGGER.debug("PQT_USUARIO_GOLPEA>>");
         try {
             dos.writeByte(PQT_USUARIO_GOLPEA);
+        } catch (IOException ex) {
+            LOGGER.fatal(null, ex);
+        }
+    }
+
+    public void enviarUsuarioEquiparSlot(int invslot) {
+        LOGGER.debug("PQT_USUARIO_EQUIPAR_SLOT>>" + invslot);
+        try {
+            dos.writeByte(PQT_USUARIO_EQUIPAR_SLOT);
+            dos.writeInt(invslot);
         } catch (IOException ex) {
             LOGGER.fatal(null, ex);
         }

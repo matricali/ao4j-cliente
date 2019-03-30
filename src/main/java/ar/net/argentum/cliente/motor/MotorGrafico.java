@@ -848,6 +848,12 @@ public class MotorGrafico {
 
                 juego.usuarioGolpea();
             }
+
+            // Equipar objeto seleccionado
+            if (key == GLFW_KEY_E && action != GLFW_RELEASE) {
+                cliente.getConexion().enviarUsuarioEquiparSlot(
+                        juego.getUsuario().getInventario().getSeleccionado());
+            }
         }
     }
 
