@@ -2,7 +2,6 @@ package ar.net.argentum.cliente.motor;
 
 import ar.net.argentum.cliente.ClienteArgentum;
 import ar.net.argentum.cliente.Juego;
-import ar.net.argentum.cliente.Recursos;
 import ar.net.argentum.cliente.fuentes.FuenteTruetypeGL32;
 import ar.net.argentum.cliente.fuentes.IFuente;
 import ar.net.argentum.cliente.interfaz.GUI;
@@ -13,6 +12,7 @@ import ar.net.argentum.cliente.mundo.Orientacion;
 import ar.net.argentum.cliente.mundo.Posicion;
 import org.apache.log4j.Logger;
 import static org.lwjgl.glfw.GLFW.*;
+import org.lwjgl.opengl.GL32C;
 
 /**
  * Motor grafico 2D, basado en Argentum Online Original
