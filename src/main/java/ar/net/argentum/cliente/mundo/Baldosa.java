@@ -199,6 +199,11 @@ public class Baldosa {
      * @param objeto
      */
     public void setObjeto(Objeto objeto) {
+        if (objeto == null) {
+            this.objgrh = null;
+            this.objeto = null;
+            return;
+        }
         this.objgrh = new Animacion(objeto.getGrh(), false);
         this.objeto = objeto;
     }

@@ -603,7 +603,8 @@ public class MotorGrafico {
                 xd = screenX * 32 + pixelOffsetX;
                 yd = screenY * 32 + pixelOffsetY;
                 // Si hay un objeto arrojado en el suelo en esta posicion, entonces lo dibujamos.
-                if (juego.getMapa().getBaldosa(x, y).getAnimObjecto().esValido()) {
+                if (juego.getMapa().getBaldosa(x, y).getAnimObjecto() != null
+                        && juego.getMapa().getBaldosa(x, y).getAnimObjecto().esValido()) {
                     dibujarAnimacion(juego.getMapa().getBaldosa(x, y).getAnimObjecto(), xd, yd, true, true, false, ambientcolor);
                 } else {
 
