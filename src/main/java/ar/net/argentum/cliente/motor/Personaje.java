@@ -73,6 +73,20 @@ public class Personaje {
         setMoveOffsetY(0);
     }
 
+    public Personaje(String nombre, Orientacion orientacion, Posicion pos, int cabeza, int cuerpo, int casco, int arma, int escudo) {
+        this.nombre = nombre;
+        setOrientacion(orientacion);
+        setPosicion(pos.x(), pos.y());
+        setCabeza(cabeza);
+        setCuerpo(cuerpo);
+        setCasco(casco);
+        setArma(arma);
+        setEscudo(escudo);
+        this.Moving = 0;
+        setMoveOffsetX(0);
+        setMoveOffsetY(0);
+    }
+
     public Posicion getPosicion() {
         return posicion;
     }
@@ -240,10 +254,24 @@ public class Personaje {
     }
 
     /**
+     * @param cuerpo ID del cuerpo
+     */
+    public void setCuerpo(int cuerpo) {
+        setCuerpo(cuerpo == 0 ? new AnimCuerpo() : new AnimCuerpo(Recursos.getCuerpo(cuerpo)));
+    }
+
+    /**
      * @param cabeza the cabeza to set
      */
     public void setCabeza(AnimCabeza cabeza) {
         this.cabeza = cabeza;
+    }
+
+    /**
+     * @param cabeza ID de la cabeza
+     */
+    public void setCabeza(int cabeza) {
+        setCabeza(cabeza == 0 ? new AnimCabeza() : new AnimCabeza(Recursos.getCabeza(cabeza)));
     }
 
     /**
@@ -254,6 +282,13 @@ public class Personaje {
     }
 
     /**
+     * @param casco ID del cascoo
+     */
+    public void setCasco(int casco) {
+        setCasco(casco == 0 ? new AnimCabeza() : new AnimCabeza(Recursos.getCasco(casco)));
+    }
+
+    /**
      * @param arma the arma to set
      */
     public void setArma(AnimArma arma) {
@@ -261,10 +296,24 @@ public class Personaje {
     }
 
     /**
+     * @param arma ID del arma
+     */
+    public void setArma(int arma) {
+        setArma(arma == 0 ? new AnimArma() : new AnimArma(Recursos.getArma(arma)));
+    }
+
+    /**
      * @param escudo the escudo to set
      */
     public void setEscudo(AnimEscudo escudo) {
         this.escudo = escudo;
+    }
+
+    /**
+     * @param escudo ID del escudo
+     */
+    public void setEscudo(int escudo) {
+        setEscudo(escudo == 0 ? new AnimEscudo() : new AnimEscudo(Recursos.getEscudo(escudo)));
     }
 
     /**
