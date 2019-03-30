@@ -854,6 +854,14 @@ public class MotorGrafico {
                 cliente.getConexion().enviarUsuarioEquiparSlot(
                         juego.getUsuario().getInventario().getSeleccionado());
             }
+            // Tirar al suelo el objeto seleccionado
+            if (key == GLFW_KEY_T && action != GLFW_RELEASE) {
+                cliente.getConexion().enviarUsuarioTirarObjeto(
+                        juego.getUsuario().getInventario().getSeleccionado(),
+                        juego.getUsuario().getInventario().getSlot(
+                                juego.getUsuario().getInventario().getSeleccionado()
+                        ).getCantidad());
+            }
         }
     }
 

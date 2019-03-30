@@ -60,6 +60,7 @@ public class ConexionConServidor extends Thread {
     protected static final byte PQT_USUARIO_EXPERIENCIA = 0x19;
     protected static final byte PQT_USUARIO_EQUIPAR_SLOT = 0x20;
     protected static final byte PQT_MUNDO_REPRODUCIR_SONIDO = 0x21;
+    protected static final byte PQT_USUARIO_TIRAR_OBJETO = 0x24;
 
     protected static final Logger LOGGER = Logger.getLogger(ConexionConServidor.class.getName());
     private final ClienteArgentum cliente;
@@ -546,6 +547,17 @@ public class ConexionConServidor extends Thread {
         try {
             dos.writeByte(PQT_USUARIO_EQUIPAR_SLOT);
             dos.writeInt(invslot);
+        } catch (IOException ex) {
+            LOGGER.fatal(null, ex);
+        }
+    }
+
+    public void enviarUsuarioTirarObjeto(int invslot, int cantidad) {
+        LOGGER.debug("PQT_USUARIO_TIRAR_OBJETO>>" + invslot + ">>" + cantidad);
+        try {
+            dos.writeByte(PQT_USUARIO_TIRAR_OBJETO);
+            dos.writeInt(invslot);
+            dos.writeInt(cantidad);
         } catch (IOException ex) {
             LOGGER.fatal(null, ex);
         }
