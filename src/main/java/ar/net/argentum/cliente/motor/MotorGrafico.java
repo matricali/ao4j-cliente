@@ -908,14 +908,31 @@ public class MotorGrafico {
                 nombre,
                 orientacion,
                 new Posicion(x, y),
-                new AnimCabeza(Recursos.getCabeza(cabeza)),
-                new AnimCuerpo(Recursos.getCuerpo(cuerpo)),
-                new AnimCabeza(Recursos.getCasco(casco)),
-                new AnimArma(Recursos.getArma(arma)),
-                new AnimEscudo(Recursos.getEscudo(escudo)));
+                cabeza,
+                cuerpo,
+                casco,
+                arma,
+                escudo);
 
         personajes[charindex].setActivo(true);
         return charindex;
+    }
+
+    public void cambiarPersonaje(int charindex, Orientacion orientacion, int cabeza, int cuerpo, int casco, int arma, int escudo) {
+        if (charindex > ultimoCharindex) {
+            return;
+        }
+        if (!personajes[charindex].isActivo()) {
+            return;
+        }
+
+        Personaje personaje = getPersonaje(charindex);
+        personaje.setOrientacion(orientacion);
+        personaje.setArma(arma);
+        personaje.setCuerpo(cuerpo);
+        personaje.setCabeza(cabeza);
+        personaje.setCasco(casco);
+        personaje.setEscudo(escudo);
     }
 
     /**
