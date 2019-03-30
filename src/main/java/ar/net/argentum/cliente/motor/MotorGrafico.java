@@ -862,6 +862,11 @@ public class MotorGrafico {
                                 juego.getUsuario().getInventario().getSeleccionado()
                         ).getCantidad());
             }
+
+            // Agarrar objeto
+            if (key == GLFW_KEY_A && action != GLFW_RELEASE) {
+                cliente.getConexion().enviarUsuarioAgarrarObjeto();
+            }
         }
     }
 
