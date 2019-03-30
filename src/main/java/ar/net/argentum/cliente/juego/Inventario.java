@@ -21,21 +21,47 @@ package ar.net.argentum.cliente.juego;
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */
 public class Inventario {
+
+    /**
+     * Huecos del inventario
+     */
     InventarioSlot objetos[];
-    
+    /**
+     * Hueco seleccionado
+     */
+    protected int seleccionado;
+
     public Inventario(int huecos) {
         this.objetos = new InventarioSlot[huecos];
     }
-    
+
     public final InventarioSlot getSlot(int slot) {
         return objetos[slot];
     }
-    
+
     public void setSlot(int slot, InventarioSlot objeto) {
         objetos[slot] = objeto;
     }
-    
+
     public final InventarioSlot[] getObjetos() {
         return objetos;
+    }
+
+    /**
+     * Obtiene el indice del hueco seleccionado
+     *
+     * @return
+     */
+    public int getSeleccionado() {
+        return seleccionado;
+    }
+
+    /**
+     * Establece el hueco seleccionado
+     *
+     * @param seleccionado
+     */
+    public void setSeleccionado(int seleccionado) {
+        this.seleccionado = seleccionado;
     }
 }
