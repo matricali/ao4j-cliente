@@ -119,10 +119,25 @@ public class RenderizadorOpenGL32 implements Renderizador {
 
     @Override
     public void dibujarSprite(Sprite sprite, int x, int y, boolean blend, Color color) {
+        // Seleccionamos la textura
         Textura textura = texturas.getTextura(sprite);
         textura.usar();
+
+        if (blend) {
+            // Habilitamos el modo de alpha blending
+            GL32C.glBlendFunc(GL32C.GL_SRC_ALPHA, GL32C.GL_ONE);
+        }
+
+        // Creamos los vertices
         drawTextureRegion(textura, this.x + x, this.y + y, sprite.sX, sprite.sY, sprite.pixelWidth, sprite.pixelHeight, color);
+
+        // Vaciamos los vertices al buffer
         flush();
+
+        if (blend) {
+            // Desabilitamos el modo de alpha blending
+            GL32C.glBlendFunc(GL32C.GL_SRC_ALPHA, GL32C.GL_ONE_MINUS_SRC_ALPHA);
+        }
     }
 
     private void configurarShaders() {
