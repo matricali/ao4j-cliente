@@ -473,8 +473,8 @@ public class ConexionConServidor extends Thread {
                     + "<<" + heading + "<<" + cuerpo + "<<" + cabeza
                     + "<<" + arma + "<<" + escudo + "<<" + casco);
 
-            Personaje personaje = cliente.getMotorGrafico().getPersonaje(charindex);
-            personaje.setOrientacion(Orientacion.valueOf(heading));
+            cliente.getMotorGrafico().cambiarPersonaje(charindex,
+                    Orientacion.valueOf(heading), cabeza, cuerpo, casco, arma, escudo);
 
         } catch (IOException ex) {
             LOGGER.fatal(null, ex);
