@@ -20,6 +20,7 @@ import ar.net.argentum.cliente.ClienteArgentum;
 import ar.net.argentum.cliente.interfaz.Pantallas;
 import ar.net.argentum.cliente.motor.Animacion;
 import ar.net.argentum.cliente.juego.InventarioSlot;
+import ar.net.argentum.cliente.juego.Objeto;
 import ar.net.argentum.cliente.juego.Usuario;
 import ar.net.argentum.cliente.mundo.Baldosa;
 import ar.net.argentum.cliente.mundo.Orientacion;
@@ -60,6 +61,7 @@ public class ConexionConServidor extends Thread {
     protected static final byte PQT_USUARIO_EXPERIENCIA = 0x19;
     protected static final byte PQT_USUARIO_EQUIPAR_SLOT = 0x20;
     protected static final byte PQT_MUNDO_REPRODUCIR_SONIDO = 0x21;
+    protected static final byte PQT_MUNDO_OBJETO = 0x22;
     protected static final byte PQT_USUARIO_TIRAR_OBJETO = 0x24;
     protected static final byte PQT_USUARIO_AGARRAR_OBJETO = 0x25;
 
@@ -215,6 +217,10 @@ public class ConexionConServidor extends Thread {
 
                 case PQT_MUNDO_REPRODUCIR_SONIDO:
                     recibirMundoReproducirSonido(dis);
+                    break;
+
+                case PQT_MUNDO_OBJETO:
+                    recibirMundoObjeto();
                     break;
 
                 default:
@@ -571,5 +577,36 @@ public class ConexionConServidor extends Thread {
         } catch (IOException ex) {
             LOGGER.fatal(null, ex);
         }
+    }
+
+    protected boolean recibirMundoObjeto() {
+        try {
+            int x = dis.readInt();
+            int y = dis.readInt();
+            int objIndex = dis.readInt();
+            int grhIndex = dis.readInt();
+            int cantidad = dis.readInt();
+            String nombre = dis.readUTF();
+
+            LOGGER.debug("PQT_MUNDO_OBJETO<<" + x + "<<" + y + "<<" + objIndex
+                    + "<<" + grhIndex + "<<" + cantidad + "<<" + nombre);
+
+            Baldosa b = cliente.getJuego().getMapa().getBaldosa(x, y);
+            if (b == null) {
+                return false;
+            }
+
+            if (objIndex == 0) {
+                b.setObjeto(null);
+                return true;
+            }
+
+            Objeto obj = new Objeto(objIndex, grhIndex, nombre, cantidad);
+            b.setObjeto(obj);
+            return true;
+        } catch (IOException ex) {
+            LOGGER.fatal(null, ex);
+        }
+        return false;
     }
 }
