@@ -302,9 +302,11 @@ public class ConexionConServidor extends Thread {
             String nombre = dis.readUTF();
             int cantidad = dis.readInt();
             boolean equipado = dis.readBoolean();
-
+            if (id_objeto == 0) {
+                cliente.getJuego().getUsuario().getInventario().setSlot(slot, null);
+                return;
+            }
             InventarioSlot nuevoSlot = new InventarioSlot(id_objeto, grhIndex, nombre, cantidad, equipado);
-
             cliente.getJuego().getUsuario().getInventario().setSlot(slot, nuevoSlot);
         } catch (IOException ex) {
             LOGGER.fatal(null, ex);
