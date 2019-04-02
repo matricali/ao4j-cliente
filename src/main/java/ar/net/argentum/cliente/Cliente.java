@@ -177,8 +177,9 @@ public class Cliente implements ClienteArgentum {
 
         // Iniciamos el motor grafico
         this.motor = new MotorGrafico(this, window, juego);
-        // motor.iniciar(800, 600, 15, 169, 544, 416);
-        motor.iniciar(800, 600);
+
+        // Iniciamos el bucle principal de dibujado
+         motor.iniciar(800, 600, 15, 169, 544, 416);
 
         // Cerramos la conexion
         if (conexion != null) {
