@@ -8,6 +8,7 @@ import ar.net.argentum.cliente.interfaz.GUI;
 import ar.net.argentum.cliente.motor.texturas.ITexturas;
 import ar.net.argentum.cliente.motor.texturas.TexturasDB;
 import ar.net.argentum.cliente.juego.Usuario;
+import ar.net.argentum.cliente.mundo.Baldosa;
 import ar.net.argentum.cliente.mundo.Orientacion;
 import ar.net.argentum.cliente.mundo.Posicion;
 import org.apache.log4j.Logger;
