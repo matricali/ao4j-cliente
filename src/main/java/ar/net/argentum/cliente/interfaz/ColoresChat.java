@@ -22,26 +22,27 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * Colores para los mensajes del chat
  *
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */
 public enum ColoresChat {
-    NEGRO('0', 0x00),
-    AZUL_OSCURO('1', 0x1),
-    VERDE_OSCURO('2', 0x2),
-    TURQUESA_OSCURO('3', 0x3),
-    ROJO_OSCURO('4', 0x4),
-    PURPURA('5', 0x5),
-    AMARILLO_OSCURO('6', 0x6),
-    GRIS('7', 0x7),
-    GRIS_OSCURO('8', 0x8),
-    AZUL('9', 0x9),
-    VERDE('a', 0xA),
-    TURQUESA('b', 0xB),
-    ROJO('c', 0xC),
-    MAGENTA('d', 0xD),
-    AMARILLO('e', 0xE),
-    BLANCO('f', 0xF),
+    NEGRO('0', 0x00, 0, 0, 0),
+    AZUL_OSCURO('1', 0x1, 0x00, 0x00, 0xAA),
+    VERDE_OSCURO('2', 0x2, 0x00, 0xAA, 0x00),
+    TURQUESA_OSCURO('3', 0x3, 0x00, 0xAA, 0xAA),
+    ROJO_OSCURO('4', 0x4, 0xAA, 0x00, 0x00),
+    PURPURA('5', 0x5, 0xAA, 0x00, 0xAA),
+    AMARILLO_OSCURO('6', 0x6, 0xFF, 0xAA, 0x00),
+    GRIS('7', 0x7, 0xAA, 0xAA, 0xAA),
+    GRIS_OSCURO('8', 0x8, 0x55, 0x55, 0x55),
+    AZUL('9', 0x9, 0x55, 0x55, 0xFF),
+    VERDE('a', 0xA, 0x55, 0xFF, 0x55),
+    TURQUESA('b', 0xB, 0x55, 0xFF, 0xFF),
+    ROJO('c', 0xC, 0xFF, 0x55, 0x55),
+    MAGENTA('d', 0xD, 0xFF, 0x55, 0xFF),
+    AMARILLO('e', 0xE, 0xFF, 0xFF, 0x55),
+    BLANCO('f', 0xF, 0xFF, 0xFF, 0xFF),
     ALEATORIO('k', 0x10, true),
     NEGRITA('l', 0x11, true),
     TACHADO('m', 0x12, true),
@@ -55,8 +56,8 @@ public enum ColoresChat {
      * formato personalizado.
      */
     public static final char COLOR_CHAR = '\u00A7';
-    private static final Pattern STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + String.valueOf(COLOR_CHAR) + "[0-9A-FK-OR]");
-    private static final Pattern SPLIT_COLOR_PATTERN = Pattern.compile("(?<color>§[0-9A-FK-OR])?(?<texto>[^§]*)?");
+    private static final Pattern STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + COLOR_CHAR + "[0-9A-FK-OR]");
+    private static final Pattern SPLIT_COLOR_PATTERN = Pattern.compile("(?<color>" + COLOR_CHAR + "[0-9a-fr])?(?<texto>[^" + COLOR_CHAR + "]*)?");
     private final static Map<Integer, ColoresChat> BY_ID = new HashMap();
     private final static Map<Character, ColoresChat> BY_CHAR = new HashMap();
 
@@ -95,6 +96,7 @@ public enum ColoresChat {
     private final char codigo;
     private final boolean esFormato;
     private final String toString;
+    private final byte color[] = new byte[3];
 
     private ColoresChat(char codigo, int intCodigo) {
         this(codigo, intCodigo, false);
@@ -105,6 +107,20 @@ public enum ColoresChat {
         this.intCodigo = intCodigo;
         this.esFormato = esFormato;
         this.toString = new String(new char[]{COLOR_CHAR, codigo});
+    }
+
+    private ColoresChat(char codigo, int intCodigo, byte rojo, byte verde, byte azul) {
+        this.codigo = codigo;
+        this.intCodigo = intCodigo;
+        this.color[0] = rojo;
+        this.color[1] = verde;
+        this.color[2] = azul;
+        this.esFormato = false;
+        this.toString = new String(new char[]{COLOR_CHAR, codigo});
+    }
+
+    private ColoresChat(char codigo, int intCodigo, int rojo, int verde, int azul) {
+        this(codigo, intCodigo, (byte) rojo, (byte) verde, (byte) azul);
     }
 
     public char getChar() {
@@ -122,6 +138,18 @@ public enum ColoresChat {
 
     public boolean esColor() {
         return !esFormato && this != RESET;
+    }
+
+    public byte getR() {
+        return this.color[0];
+    }
+
+    public byte getG() {
+        return this.color[1];
+    }
+
+    public byte getB() {
+        return this.color[2];
     }
 
 }
