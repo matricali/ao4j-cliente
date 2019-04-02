@@ -516,7 +516,10 @@ public class ConexionConServidor extends Thread {
             LOGGER.debug("PQT_MUNDO_REPRODUCIR_SONIDO<<" + sonido
                     + "<<" + x + "<<" + y);
 
-            Sonido.reproducirSonido(sonido, x, y);
+            float xf = 0.0f + ((float) (x - cliente.getJuego().getUsuario().getPosicion().x())) / 4;
+            float yf = 0.0f + ((float) (y - cliente.getJuego().getUsuario().getPosicion().y())) / 4;
+
+            Sonido.reproducirSonido(sonido, xf, yf);
         } catch (IOException ex) {
             LOGGER.fatal(null, ex);
         }

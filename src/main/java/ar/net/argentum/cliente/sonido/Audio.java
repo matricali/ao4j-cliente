@@ -35,7 +35,12 @@ public class Audio {
 
     private final int buffer;
     private final int source;
-    
+
+    FloatBuffer sonidoPosicion = (FloatBuffer) BufferUtils.createFloatBuffer(3)
+            .put(new float[]{0.0f, 0.0f, 0.0f}).rewind();
+    FloatBuffer sonidoVelocidad = (FloatBuffer) BufferUtils.createFloatBuffer(3)
+            .put(new float[]{0.0f, 0.0f, 0.0f}).rewind();
+
     /**
      * Cargar un sonido OGG desde un archivo utilizando STB y Vorbis
      *
@@ -87,10 +92,18 @@ public class Audio {
 
         // Asociamos el origen a nuestro buffer
         AL10.alSourcei(source, AL10.AL_BUFFER, buffer);
-        
-        // Lo configuramos
+
+        /**
+         * Asociamos los buffers de posicion, velocidad, y orientacion a nuestro
+         * origen.
+         *
+         * @TODO Esto lo vamos a usar para el sonido 3D.
+         */
         AL10.alSourcef(source, AL10.AL_PITCH, 1.0f);
         AL10.alSourcef(source, AL10.AL_GAIN, 1.0f);
+        AL10.alSourcefv(source, AL10.AL_POSITION, sonidoPosicion);
+        AL10.alSourcefv(source, AL10.AL_VELOCITY, sonidoVelocidad);
+        AL10.alSourcei(source, AL10.AL_SOURCE_RELATIVE, AL10.AL_TRUE);
     }
 
     /**
@@ -102,9 +115,12 @@ public class Audio {
     }
 
     /**
-     * Reproducir el sonido
+     * Reproducir el sonido en 3D
      */
-    public void reproducir() {
+    public void reproducir(float x, float y) {
+        sonidoPosicion.put(1, x);
+        sonidoPosicion.put(2, y);
+        AL10.alSourcefv(source, AL10.AL_POSITION, sonidoPosicion);
         AL10.alSourcePlay(source);
     }
 

@@ -16,9 +16,11 @@
  */
 package ar.net.argentum.cliente.sonido;
 
+import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.log4j.Logger;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.ALC;
@@ -64,6 +66,13 @@ public abstract class Sonido {
     private static long context;
     private static boolean iniciado;
 
+    protected static FloatBuffer oyentePosicion = (FloatBuffer) BufferUtils.createFloatBuffer(3)
+            .put(new float[]{0.0f, 0.0f, 0.0f}).rewind();
+    protected static FloatBuffer oyenteVelocidad = (FloatBuffer) BufferUtils.createFloatBuffer(3)
+            .put(new float[]{0.0f, 0.0f, 0.0f}).rewind();
+    protected static FloatBuffer oyenteOrientacion = (FloatBuffer) BufferUtils.createFloatBuffer(6)
+            .put(new float[]{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}).rewind();
+
     public static Audio getSonido(int id) {
         if (!SONIDOS.containsKey(id)) {
             LOGGER.debug("Cargando sonido Nº" + id);
@@ -85,11 +94,11 @@ public abstract class Sonido {
      *
      * @param id Numero de sonido a reproducir
      */
-    public static void reproducirSonido(int id, int x, int y) {
+    public static void reproducirSonido(int id, float x, float y) {
         try {
             Audio sonido = getSonido(id);
             if (sonido != null) {
-                sonido.reproducir();
+                sonido.reproducir(x, y);
                 return;
             }
         } catch (Exception ex) {
@@ -133,6 +142,11 @@ public abstract class Sonido {
         if (AL10.alGetError() != AL10.AL_NO_ERROR) {
             LOGGER.error(AL10.AL_FALSE);
         }
+
+        // Posicionamos al oyente
+        AL10.alListenerfv(AL10.AL_POSITION, oyentePosicion);
+        AL10.alListenerfv(AL10.AL_VELOCITY, oyenteVelocidad);
+        AL10.alListenerfv(AL10.AL_ORIENTATION, oyenteOrientacion);
     }
 
     /**
