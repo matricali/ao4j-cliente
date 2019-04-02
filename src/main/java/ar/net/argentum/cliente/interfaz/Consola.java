@@ -16,9 +16,15 @@
  */
 package ar.net.argentum.cliente.interfaz;
 
-import ar.net.argentum.cliente.motor.IInterfaz;
 import ar.net.argentum.cliente.interfaz.componentes.TextField;
 import ar.net.argentum.cliente.interfaz.eventos.OnTextFieldEventPerformed;
+import java.nio.IntBuffer;
+import java.text.Normalizer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.regex.Matcher;
+import net.museful.general.CircularArrayList;
 import org.lwjgl.nuklear.*;
 import static org.lwjgl.nuklear.Nuklear.*;
 import org.lwjgl.system.*;
@@ -31,20 +37,47 @@ import static org.lwjgl.system.MemoryStack.*;
  */
 public class Consola {
 
-    protected final IInterfaz padre;
-    protected final TextField consola;
-    protected final TextField mensaje;
+    protected static NkColor convertirColor(ColoresChat color) {
+        return NkColor.create().set(color.getR(), color.getG(), color.getB(), (byte) 0xFF);
+    }
 
-    public Consola(IInterfaz padre) {
+    protected final GUI padre;
+    protected final TextField mensaje;
+    protected final CircularArrayList<String> mensajes;
+    protected final int alturaRenglon = 14;
+    protected final Map<Character, NkColor> colores = new HashMap<Character, NkColor>() {
+        {
+            put(ColoresChat.ROJO_OSCURO.getChar(), convertirColor(ColoresChat.ROJO_OSCURO));
+            put(ColoresChat.ROJO.getChar(), convertirColor(ColoresChat.ROJO));
+            put(ColoresChat.AMARILLO_OSCURO.getChar(), convertirColor(ColoresChat.AMARILLO_OSCURO));
+            put(ColoresChat.AMARILLO.getChar(), convertirColor(ColoresChat.AMARILLO));
+            put(ColoresChat.VERDE_OSCURO.getChar(), convertirColor(ColoresChat.VERDE_OSCURO));
+            put(ColoresChat.VERDE.getChar(), convertirColor(ColoresChat.VERDE));
+            put(ColoresChat.TURQUESA.getChar(), convertirColor(ColoresChat.TURQUESA));
+            put(ColoresChat.TURQUESA_OSCURO.getChar(), convertirColor(ColoresChat.TURQUESA_OSCURO));
+            put(ColoresChat.AZUL_OSCURO.getChar(), convertirColor(ColoresChat.AZUL_OSCURO));
+            put(ColoresChat.AZUL.getChar(), convertirColor(ColoresChat.AZUL));
+            put(ColoresChat.MAGENTA.getChar(), convertirColor(ColoresChat.MAGENTA));
+            put(ColoresChat.PURPURA.getChar(), convertirColor(ColoresChat.PURPURA));
+            put(ColoresChat.BLANCO.getChar(), convertirColor(ColoresChat.BLANCO));
+            put(ColoresChat.GRIS.getChar(), convertirColor(ColoresChat.GRIS));
+            put(ColoresChat.GRIS_OSCURO.getChar(), convertirColor(ColoresChat.GRIS_OSCURO));
+            put(ColoresChat.NEGRO.getChar(), convertirColor(ColoresChat.NEGRO));
+        }
+    };
+    protected final NkColor colorDefecto = colores.get('7');
+
+    IntBuffer scrollHorizOffset = MemoryStack.stackMallocInt(1);
+    IntBuffer scrollVertOffset = MemoryStack.stackMallocInt(1);
+
+    public Consola(GUI padre) {
         this.padre = padre;
-        this.consola = new TextField(2048, true);
+        this.mensajes = new CircularArrayList<>(25);
         this.mensaje = new TextField(255, false, new OnTextFieldEventPerformed() {
             @Override
             public void onCommit(TextField campo) {
                 String mensaje = campo.getValue();
                 padre.getCliente().getConexion().enviarChat(mensaje);
-                // Agregamos mensaje a la consola (?)
-                // consola.appendString(mensaje + "\n");
                 // Borramos el campo
                 campo.reset();
             }
@@ -59,12 +92,43 @@ public class Consola {
                     ctx,
                     "Consola",
                     nk_rect(x, y, 544, 140, rect),
-                    NK_WINDOW_MOVABLE
+                    NK_WINDOW_SCROLL_AUTO_HIDE
             )) {
 
                 // Consola
-                nk_layout_row_dynamic(ctx, 95, 1);
-                consola.render(ctx);
+                nk_layout_row_dynamic(ctx, 98, 1);
+                {
+                    if (nk_group_scrolled_offset_begin(ctx, scrollHorizOffset, scrollVertOffset, "consolaMensajes", NK_WINDOW_SCROLL_AUTO_HIDE)) {
+                        nk_layout_row_dynamic(ctx, alturaRenglon, 1);
+                        {
+                            try {
+                                NkColor colorActual = colorDefecto;
+                                for (String linea : mensajes) {
+                                    Matcher matcher = ColoresChat.separarColores(linea);
+                                    while (matcher.find()) {
+                                        String color = matcher.group("color");
+                                        String texto = matcher.group("texto");
+                                        if (color != null && !color.isEmpty()) {
+                                            char c = matcher.group("color").charAt(1);
+                                            if (colores.containsKey(c)) {
+                                                colorActual = colores.get(c);
+                                            } else {
+                                                colorActual = colorDefecto;
+                                            }
+                                        }
+                                        if (texto != null && !texto.isEmpty()) {
+                                            nk_label_colored(ctx, normalizar(texto), NK_TEXT_ALIGN_LEFT, colorActual);
+                                        }
+                                    }
+                                }
+
+                            } catch (NoSuchElementException ex) {
+
+                            }
+                        }
+                        nk_group_scrolled_end(ctx);
+                    }
+                }
 
                 // Ingreso de mensajes
                 nk_layout_row_dynamic(ctx, 20, 1);
@@ -75,6 +139,19 @@ public class Consola {
     }
 
     public void agregarTexto(String texto) {
-        consola.appendString(texto + "\n");
+        if (mensajes.size() == mensajes.capacity()) {
+            // Si la cola de mensajes esta llena, entonces borramos el mas viejo
+            mensajes.remove(0);
+        }
+        // Agregamos el mensaje a la lista
+        mensajes.add(texto);
+        // Movemos el scroll al final
+        scrollVertOffset.put(0, (alturaRenglon + 2) * mensajes.size());
+    }
+
+    protected String normalizar(String input) {
+        return input == null ? null
+                : Normalizer.normalize(input, Normalizer.Form.NFD)
+                        .replaceAll("[^\\p{ASCII}]", "");
     }
 }

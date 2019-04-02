@@ -138,7 +138,6 @@ public class GUI implements IInterfaz {
 
     @Override
     public void agregarMensajeConsola(String mensaje) {
-        mensaje = ColoresChat.eliminarColores(mensaje);
         LOGGER.info("CONSOLA>>" + mensaje);
         gui_consola.agregarTexto(mensaje);
     }
