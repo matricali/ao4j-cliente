@@ -104,6 +104,7 @@ public class Consola {
                             try {
                                 NkColor colorActual = colorDefecto;
                                 for (String linea : mensajes) {
+                                    colorActual = colorDefecto;
                                     Matcher matcher = ColoresChat.separarColores(linea);
                                     while (matcher.find()) {
                                         String color = matcher.group("color");
@@ -112,8 +113,6 @@ public class Consola {
                                             char c = matcher.group("color").charAt(1);
                                             if (colores.containsKey(c)) {
                                                 colorActual = colores.get(c);
-                                            } else {
-                                                colorActual = colorDefecto;
                                             }
                                         }
                                         if (texto != null && !texto.isEmpty()) {
