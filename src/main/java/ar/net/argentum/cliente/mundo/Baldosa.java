@@ -64,7 +64,7 @@ public class Baldosa {
     /**
      * Verdadero si la baldosa esta bloqueada
      */
-    protected byte bloqueado;
+    protected boolean bloqueado;
     /**
      * Atributos especiales de la baldosa
      */
@@ -140,28 +140,18 @@ public class Baldosa {
      * @return
      */
     public boolean isBloqueado() {
-        return bloqueado == 1;
-    }
-
-    /**
-     * Bloquea o desbloquea la baldosa.
-     *
-     * @param bloq 1 == BLOQUEADO, 0 == DESBLOQUEADO
-     * @return
-     */
-    public Baldosa setBloqueado(byte bloq) {
-        this.bloqueado = bloq;
-        return this;
+        return bloqueado;
     }
 
     /**
      * Bloquea o desbloquea la baldosa
      *
-     * @param bloq
+     * @param bloq Verdadero si esta bloqueado
      * @return
      */
     public Baldosa setBloqueado(boolean bloq) {
-        return setBloqueado(bloq ? (byte) 1 : 0);
+        this.bloqueado = bloq;
+        return this;
     }
 
     /**
@@ -209,11 +199,6 @@ public class Baldosa {
     }
 
     public boolean isAgua() {
-//        If ((.Graphic(1).GrhIndex >= 1505 And .Graphic(1).GrhIndex <= 1520) Or (.Graphic(1).GrhIndex >= 5665 And .Graphic(1).GrhIndex <= 5680) Or (.Graphic(1).GrhIndex >= 13547 And .Graphic(1).GrhIndex <= 13562)) And .Graphic(2).GrhIndex = 0 Then
-//                        Map_CheckWater = True
-//                  Else
-//                        Map_CheckWater = False
-//                  End If
         return false;
     }
 

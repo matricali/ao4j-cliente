@@ -16,7 +16,6 @@
  */
 package ar.net.argentum.cliente.mundo;
 
-import ar.net.argentum.cliente.mundo.Posicion;
 import ar.net.argentum.cliente.Juego;
 import ar.net.argentum.cliente.motor.Animacion;
 import ar.net.argentum.general.UtilLegacy;
@@ -31,6 +30,10 @@ import org.apache.log4j.Logger;
 public class Mapa {
 
     protected static final Logger LOGGER = Logger.getLogger(Mapa.class);
+    private static final byte MAPA_MIN_X = 1;
+    private static final byte MAPA_MAX_X = 100;
+    private static final byte MAPA_MIN_Y = 1;
+    private static final byte MAPA_MAX_Y = 100;
     protected final Juego juego;
 
     protected Baldosa[][] baldosas;
@@ -44,7 +47,7 @@ public class Mapa {
         LOGGER.info("Iniciando carga del mapa " + numMapa + "...");
 
         this.juego = juego;
-        this.baldosas = new Baldosa[101][101];
+        this.baldosas = new Baldosa[MAPA_MAX_X + 1][MAPA_MAX_Y + 1];
         this.numMapa = numMapa;
 
         try (RandomAccessFile f = new RandomAccessFile("recursos/mapas/mapa" + numMapa + ".map", "r")) {
@@ -62,16 +65,14 @@ public class Mapa {
             tempint = UtilLegacy.bigToLittle(f.readShort());
             tempint = UtilLegacy.bigToLittle(f.readShort());
 
-            byte bloq;
             short tempshort;
 
-            for (int y = 1; y <= 100; y++) {
-                for (int x = 1; x <= 100; x++) {
+            for (int y = MAPA_MIN_Y; y <= MAPA_MAX_Y; ++y) {
+                for (int x = MAPA_MIN_X; x <= MAPA_MAX_X; ++x) {
                     Baldosa md = new Baldosa();
 
                     byflags = UtilLegacy.bigToLittle(f.readByte());
-                    bloq = (byte) (byflags & 1);
-                    md.setBloqueado(bloq);
+                    md.setBloqueado((byflags & 1) == 1);
 
                     // Grafico de la capa 1
                     tempshort = UtilLegacy.bigToLittle(f.readShort());
@@ -80,7 +81,7 @@ public class Mapa {
                     // }
 
                     // Graficoo de la capa 2
-                    if ((byte) (byflags & 2) != 0) {
+                    if ((byflags & 2) == 2) {
                         tempshort = UtilLegacy.bigToLittle(f.readShort());
                         // if (tempshort < cantidadGraficos) {
                         md.setCapa(2, new Animacion(tempshort, true));
@@ -90,7 +91,7 @@ public class Mapa {
                     }
 
                     // Grafico de la capa 3
-                    if ((byte) (byflags & 4) != 0) {
+                    if ((byflags & 4) == 4) {
                         tempshort = UtilLegacy.bigToLittle(f.readShort());
                         // if (tempshort < cantidadGraficos) {
                         md.setCapa(3, new Animacion(tempshort, true));
@@ -100,7 +101,7 @@ public class Mapa {
                     }
 
                     // Grafico de la capa 4
-                    if ((byte) (byflags & 8) != 0) {
+                    if ((byflags & 8) == 8) {
                         tempshort = UtilLegacy.bigToLittle(f.readShort());
                         // if (tempshort < cantidadGraficos) {
                         md.setCapa(4, new Animacion(tempshort, true));
@@ -109,7 +110,7 @@ public class Mapa {
                         md.setCapa(4, new Animacion());
                     }
 
-                    if ((byte) (byflags & 16) != 0) {
+                    if ((byflags & 16) == 16) {
                         md.setTrigger(UtilLegacy.bigToLittle(f.readShort()));
                     } else {
                         md.setTrigger((short) 0);

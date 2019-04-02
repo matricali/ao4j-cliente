@@ -575,48 +575,52 @@ public class MotorGrafico {
             screenMaxX = screenMaxX + 1;
         }
 
+        Baldosa baldosa;
         for (y = screenMinY; y <= screenMaxY; y++) {
             for (x = screenMinX; x <= screenMaxX; x++) {
+                baldosa = juego.getMapa().getBaldosa(x, y);
                 // Dibujamos la primer capa
-                dibujarAnimacion(juego.getMapa().getBaldosa(x, y).getCapa(1),
+                dibujarAnimacion(baldosa.getCapa(1),
                         (screenX - 1) * TILE_PIXEL_WIDTH + pixelOffsetX,
                         (screenY - 1) * TILE_PIXEL_HEIGHT + pixelOffsetY, true, true, false, ambientcolor);
 
                 // Dibujamos la segunda capa
-                if (juego.getMapa().getBaldosa(x, y).getCapa(2).esValido()) {
-                    dibujarAnimacion(juego.getMapa().getBaldosa(x, y).getCapa(2),
+                if (baldosa.getCapa(2).esValido()) {
+                    dibujarAnimacion(baldosa.getCapa(2),
                             (screenX - 1) * TILE_PIXEL_WIDTH + pixelOffsetX,
                             (screenY - 1) * TILE_PIXEL_HEIGHT + pixelOffsetY, true, true, false, ambientcolor);
                 }
-                screenX++;
+                ++screenX;
             }
             screenX = screenX - x + screenMinX;
-            screenY++;
+            ++screenY;
         }
 
         int xd;
         int yd;
+
         screenY = minYOffset - tileBufferSize;
         for (y = minY; y <= maxY; y++) {
             screenX = minXOffset - tileBufferSize;
             for (x = minX; x <= maxX; x++) {
                 xd = screenX * 32 + pixelOffsetX;
                 yd = screenY * 32 + pixelOffsetY;
+                baldosa = juego.getMapa().getBaldosa(x, y);
                 // Si hay un objeto arrojado en el suelo en esta posicion, entonces lo dibujamos.
-                if (juego.getMapa().getBaldosa(x, y).getAnimObjecto() != null
-                        && juego.getMapa().getBaldosa(x, y).getAnimObjecto().esValido()) {
-                    dibujarAnimacion(juego.getMapa().getBaldosa(x, y).getAnimObjecto(), xd, yd, true, true, false, ambientcolor);
+                if (baldosa.getAnimObjecto() != null
+                        && baldosa.getAnimObjecto().esValido()) {
+                    dibujarAnimacion(baldosa.getAnimObjecto(), xd, yd, true, true, false, ambientcolor);
                 } else {
 
                 }
 
                 // Hay un personaje parado en esta baldosa?
-                if (juego.getMapa().getBaldosa(x, y).getCharindex() > 0) {
-                    Personaje p = personajes[juego.getMapa().getBaldosa(x, y).getCharindex()];
+                if (baldosa.getCharindex() > 0) {
+                    Personaje p = personajes[baldosa.getCharindex()];
 
                     if (!p.isActivo()) {
                         // Si el personaje no esta activo, entonces lo sacamos
-                        juego.getMapa().getBaldosa(x, y).setCharindex(0);
+                        baldosa.setCharindex(0);
                     } else {
                         // Si el personaje esta activo, entonces lo dibujamos
                         dibujarPersonaje(p, xd, yd);
@@ -624,35 +628,36 @@ public class MotorGrafico {
                 }
 
                 // Dibujamos la capa 3
-                if (juego.getMapa().getBaldosa(x, y).getCapa(3).esValido()) {
-                    dibujarAnimacion(juego.getMapa().getBaldosa(x, y).getCapa(3), xd,
+                if (baldosa.getCapa(3).esValido()) {
+                    dibujarAnimacion(baldosa.getCapa(3), xd,
                             yd, true, true, false, ambientcolor);
                 }
 
                 // Dibujamos el efecto en la baldosa
-                if (juego.getMapa().getBaldosa(x, y).getEfecto() != null) {
-                    dibujarAnimacion(juego.getMapa().getBaldosa(x, y).getEfecto(), xd,
+                if (baldosa.getEfecto() != null) {
+                    dibujarAnimacion(baldosa.getEfecto(), xd,
                             yd, true, true, true, ambientcolor);
                 }
-                screenX++;
+                ++screenX;
             }
-            screenY++;
+            ++screenY;
         }
 
         screenY = minYOffset - tileBufferSize;
-        for (y = minY; y <= maxY; y++) {
+        for (y = minY; y <= maxY; ++y) {
             screenX = minXOffset - tileBufferSize;
-            for (x = minX; x <= maxX; x++) {
+            for (x = minX; x <= maxX; ++x) {
                 xd = screenX * 32 + pixelOffsetX;
                 yd = screenY * 32 + pixelOffsetY;
+                baldosa = juego.getMapa().getBaldosa(x, y);
                 // Dibujamos el techo
-                if (juego.getMapa().getBaldosa(x, y).getCapa(4).esValido()) {
-                    dibujarAnimacion(juego.getMapa().getBaldosa(x, y).getCapa(4), xd,
+                if (baldosa.getCapa(4).esValido()) {
+                    dibujarAnimacion(baldosa.getCapa(4), xd,
                             yd, true, true, false, ambientcolor);
                 }
-                screenX++;
+                ++screenX;
             }
-            screenY++;
+            ++screenY;
         }
 
         dibujarTexto(454, 8, 1, ambientcolor, FPS + " FPS");
