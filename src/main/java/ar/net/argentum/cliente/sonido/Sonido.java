@@ -16,6 +16,8 @@
  */
 package ar.net.argentum.cliente.sonido;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.log4j.Logger;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
@@ -55,25 +57,26 @@ public abstract class Sonido {
     public static final int SND_AVE3 = 34;
 
     private static final Logger LOGGER = Logger.getLogger(Sonido.class);
-    private static final Audio[] SONIDOS = new Audio[30];
+    private static final Map<Integer, Audio> SONIDOS = new HashMap<>();
 
     private static long device;
     private static long context;
     private static boolean iniciado;
 
     public static Audio getSonido(int id) {
-        if (SONIDOS[id] == null) {
+        if (!SONIDOS.containsKey(id)) {
             LOGGER.debug("Cargando sonido Nº" + id);
             try {
-                SONIDOS[id] = new Audio("recursos/sonidos/" + id + ".ogg");
-                return SONIDOS[id];
+                Audio audio = new Audio("recursos/sonidos/" + id + ".ogg");
+                SONIDOS.put(id, audio);
+                return audio;
             } catch (Exception ex) {
                 LOGGER.fatal("Error al cargar el sonido Nº" + id, ex);
                 return null;
             }
         }
         LOGGER.debug("Reutilizando sonido Nº" + id);
-        return SONIDOS[id];
+        return SONIDOS.get(id);
     }
 
     /**
@@ -138,12 +141,11 @@ public abstract class Sonido {
         LOGGER.debug("Destruyendo contexto de sonido...");
 
         // Destruimos los sonidos cargados
-        for (int i = 0; i < SONIDOS.length; ++i) {
-            if (SONIDOS[i] != null) {
-                LOGGER.debug("Liberando sonido nº" + i);
-                SONIDOS[i].destruir();
-            }
+        for (Map.Entry<Integer, Audio> entry : SONIDOS.entrySet()) {
+            LOGGER.debug("Liberando sonido nº" + entry.getKey());
+            entry.getValue().destruir();
         }
+
         // Destruimos el contexto de Open AL
         ALC10.alcDestroyContext(context);
 
