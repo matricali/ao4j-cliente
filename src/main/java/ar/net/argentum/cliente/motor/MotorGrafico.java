@@ -403,63 +403,6 @@ public class MotorGrafico {
     }
 
     /**
-     * Hacer caminar al personaje un paso en la direccion dada
-     *
-     * @see MooveCharByHead
-     *
-     * @param id_personaje
-     * @param orientacion
-     */
-    public void personajeDarPaso(int id_personaje, Orientacion orientacion) {
-        int addX = 0;
-        int addY = 0;
-        int X;
-        int Y;
-        int nX;
-        int nY;
-
-        Personaje personaje = personajes[id_personaje];
-
-        X = personaje.getPosicion().x();
-        Y = personaje.getPosicion().y();
-
-        switch (orientacion) {
-            case NORTE:
-                addY = -1;
-                break;
-
-            case ESTE:
-                addX = 1;
-                break;
-
-            case SUR:
-                addY = 1;
-                break;
-
-            case OESTE:
-                addX = -1;
-                break;
-        }
-
-        nX = X + addX;
-        nY = Y + addY;
-
-        /**
-         * Movemos la entidad en el mundo. Basicamente sacamos el personaje de
-         * la baldosa anterior y luego lo ponemos en la nueva
-         */
-        try {
-            juego.getMapa().getBaldosa(X, Y).setCharindex(0);
-            juego.getMapa().getBaldosa(nX, nY).setCharindex(id_personaje);
-        } catch (Exception ex) {
-            LOGGER.error(null, ex);
-        }
-
-        personaje.setPosicion(nX, nY);
-        personaje.setMovimiento(addX, addY, orientacion);
-    }
-
-    /**
      * Dibujar una animacion en la pantalla
      *
      * @param grh Animacion que queremos dibujar

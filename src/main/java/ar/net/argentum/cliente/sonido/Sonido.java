@@ -50,6 +50,8 @@ public abstract class Sonido {
     public static final int SND_RESUCITAR = 20;
     public static final int SND_AVE = 21;
     public static final int SND_AVE2 = 22;
+    public static final int SND_PASOS_1 = 23;
+    public static final int SND_PASOS_2 = 24;
     public static final int SND_SACARARMA = 25;
     public static final int SND_GRILLO = 28;
     public static final int SND_GRILLO2 = 29;
