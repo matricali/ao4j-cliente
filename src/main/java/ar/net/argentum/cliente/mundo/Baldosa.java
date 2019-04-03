@@ -215,4 +215,11 @@ public class Baldosa {
     public void setEfecto(Animacion efecto) {
         this.efecto = efecto;
     }
+
+    /**
+     * @return the trigger
+     */
+    public short getTrigger() {
+        return trigger;
+    }
 }
