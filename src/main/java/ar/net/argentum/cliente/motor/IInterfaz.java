@@ -71,4 +71,9 @@ public interface IInterfaz {
     public void mostrarMensaje(String mensaje, String titulo);
 
     public void agregarMensajeConsola(String mensaje);
+
+    /**
+     * @return Devuelve verdadero si esta isEscribiendo en alguna caja de texto
+     */
+    public boolean isEscribiendo();
 }
