@@ -199,7 +199,21 @@ public class Baldosa {
     }
 
     public boolean isAgua() {
-        return false;
+        Animacion anim = getCapa(1);
+        if (anim == null) {
+            return false;
+        }
+        int grafico = anim.getSprite().frames[0];
+        return (grafico >= 1505 && grafico <= 1520)
+                || (grafico >= 5665 && grafico <= 5680)
+                || (grafico >= 13547 && grafico <= 13562);
+    }
+
+    public boolean isNavegable() {
+        if (!isAgua()) {
+            return false;
+        }
+        return getCapa(2) == null;
     }
 
     /**
