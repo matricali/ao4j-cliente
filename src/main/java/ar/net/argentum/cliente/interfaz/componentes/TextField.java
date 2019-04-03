@@ -25,15 +25,7 @@ import org.lwjgl.nuklear.NkContext;
 import org.lwjgl.nuklear.NkPluginFilter;
 import org.lwjgl.nuklear.NkPluginFilterI;
 import org.lwjgl.nuklear.Nuklear;
-import static org.lwjgl.nuklear.Nuklear.NK_BUTTON_LEFT;
-import static org.lwjgl.nuklear.Nuklear.NK_EDIT_COMMITED;
-import static org.lwjgl.nuklear.Nuklear.NK_EDIT_DEFAULT;
-import static org.lwjgl.nuklear.Nuklear.NK_EDIT_MULTILINE;
-import static org.lwjgl.nuklear.Nuklear.NK_EDIT_SIG_ENTER;
-import static org.lwjgl.nuklear.Nuklear.NK_EDIT_SIMPLE;
-import static org.lwjgl.nuklear.Nuklear.nk_edit_focus;
-import static org.lwjgl.nuklear.Nuklear.nk_edit_string;
-import static org.lwjgl.nuklear.Nuklear.nk_widget_is_mouse_clicked;
+import static org.lwjgl.nuklear.Nuklear.*;
 
 /**
  *
@@ -48,7 +40,7 @@ public class TextField {
     private final NkPluginFilterI filter; // Restrict what the user can type
     private OnTextFieldEventPerformed callback;
 
-    public TextField(int maxLength, boolean multiline) {
+    public TextField(int maxLength, boolean multiline, String def) {
         this.maxLength = maxLength;
         options = NK_EDIT_SIMPLE;
         if (multiline) {
@@ -61,12 +53,20 @@ public class TextField {
         // The IntBuffer is size 1 because we only need one int
         this.length = BufferUtils.createIntBuffer(1); // BufferUtils from LWJGL
 
+        if (!def.isEmpty()) {
+            setValue(def);
+        }
+
         // Setup a filter to restrict to ASCII
         this.filter = NkPluginFilter.create(Nuklear::nnk_filter_ascii);
     }
 
+    public TextField(int maxLength, boolean multiline) {
+        this(maxLength, multiline, "");
+    }
+
     public TextField(int maxLength, boolean multiline, OnTextFieldEventPerformed callback) {
-        this(maxLength, multiline);
+        this(maxLength, multiline, "");
         options |= NK_EDIT_SIG_ENTER;
         this.callback = callback;
     }
@@ -82,7 +82,6 @@ public class TextField {
         }
         // No olvidarse de usar `maxLength + 1` porque Nuklear omite el ultimo caracter
         int ret = nk_edit_string(context, options, content, length, maxLength + 1, filter);
-
         // Manejamos los eventos que nos interesa
         if (callback != null) {
             if ((ret & NK_EDIT_COMMITED) > 0) {
