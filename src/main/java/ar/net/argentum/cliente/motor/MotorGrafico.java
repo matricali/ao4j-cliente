@@ -177,6 +177,10 @@ public class MotorGrafico {
      * Color de luz ambiental
      */
     Color ambientcolor;
+    /**
+     * Color para los techos transparentes
+     */
+    Color transcolor;
 
     /**
      * Generar una nueva instancia del motor grafico
@@ -190,6 +194,7 @@ public class MotorGrafico {
         this.ventana = ventana;
         this.juego = juego;
         this.ambientcolor = new Color(1.0f, 1.0f, 1.0f);
+        this.transcolor = new Color(1.0f, 1.0f, 1.0f, 0.5f);
         this.texturas = new TexturasDB();
         texturas.inicializar();
     }
@@ -587,6 +592,9 @@ public class MotorGrafico {
             ++screenY;
         }
 
+        // Si esta bajo techo (trigger==1) hay que dibujar la capa 4 semi transparente
+        boolean blend = juego.getMapa().getBaldosa(tileX, tileY).getTrigger() == 1;
+
         screenY = minYOffset - tileBufferSize;
         for (y = minY; y <= maxY; ++y) {
             screenX = minXOffset - tileBufferSize;
@@ -597,7 +605,7 @@ public class MotorGrafico {
                 // Dibujamos el techo
                 if (baldosa.getCapa(4).esValido()) {
                     dibujarAnimacion(baldosa.getCapa(4), xd,
-                            yd, true, true, false, ambientcolor);
+                            yd, true, true, blend, blend ? transcolor : ambientcolor);
                 }
                 ++screenX;
             }
