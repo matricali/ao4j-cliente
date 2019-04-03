@@ -64,6 +64,7 @@ public class ConexionConServidor extends Thread {
     protected static final byte PQT_MUNDO_OBJETO = 0x22;
     protected static final byte PQT_USUARIO_TIRAR_OBJETO = 0x24;
     protected static final byte PQT_USUARIO_AGARRAR_OBJETO = 0x25;
+    protected static final byte PQT_MUNDO_BALDOSA_BLOQUEADA = 0x26;
 
     protected static final Logger LOGGER = Logger.getLogger(ConexionConServidor.class.getName());
     private final ClienteArgentum cliente;
@@ -221,6 +222,10 @@ public class ConexionConServidor extends Thread {
 
                 case PQT_MUNDO_OBJETO:
                     recibirMundoObjeto();
+                    break;
+
+                case PQT_MUNDO_BALDOSA_BLOQUEADA:
+                    recibirMundoBaldosaBloqueada();
                     break;
 
                 default:
@@ -614,4 +619,25 @@ public class ConexionConServidor extends Thread {
         }
         return false;
     }
+
+    protected boolean recibirMundoBaldosaBloqueada() {
+        try {
+            int x = dis.readInt();
+            int y = dis.readInt();
+            boolean bloq = dis.readBoolean();
+
+            LOGGER.debug("PQT_MUNDO_BALDOSA_BLOQUEADA<<" + x + "<<" + y + "<<" + bloq);
+
+            Baldosa b = cliente.getJuego().getMapa().getBaldosa(x, y);
+            if (b == null) {
+                return false;
+            }
+            b.setBloqueado(bloq);
+            return true;
+        } catch (IOException ex) {
+            LOGGER.fatal(null, ex);
+        }
+        return false;
+    }
+
 }
