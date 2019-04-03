@@ -506,7 +506,7 @@ public class ConexionConServidor extends Thread {
             LOGGER.debug("PQT_PERSONAJE_CAMINAR<<" + charindex
                     + "<<" + heading);
 
-            cliente.getMotorGrafico().personajeDarPaso(charindex, Orientacion.valueOf(heading));
+            cliente.getJuego().personajeDarPaso(charindex, Orientacion.valueOf(heading));
         } catch (IOException ex) {
             LOGGER.fatal(null, ex);
         }
