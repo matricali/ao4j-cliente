@@ -39,6 +39,7 @@ public class TextField {
     private final IntBuffer length; // Nuklear writes the length of the string in here
     private final NkPluginFilterI filter; // Restrict what the user can type
     private OnTextFieldEventPerformed callback;
+    protected boolean focused;
 
     public TextField(int maxLength, boolean multiline, String def) {
         this.maxLength = maxLength;
@@ -88,6 +89,7 @@ public class TextField {
                 callback.onCommit(this);
             }
         }
+        this.focused = (ret & NK_EDIT_ACTIVE) != 0;
     }
 
     /**
@@ -130,5 +132,12 @@ public class TextField {
 
     public void reset() {
         setValue("");
+    }
+
+    /**
+     * @return the focused
+     */
+    public boolean isFocused() {
+        return focused;
     }
 }

@@ -98,6 +98,7 @@ public class GUI implements IInterfaz {
     private final Juego game;
     private Pantallas pantalla = Pantallas.INICIAR_SESION;
     private final List<MessageBox> mensajes;
+    private boolean escribiendo;
 
     public GUI(ClienteArgentum cliente, long ventana, Juego game, ITexturas surface) {
         this.cliente = cliente;
@@ -691,5 +692,13 @@ public class GUI implements IInterfaz {
          * No hacemos nada porque ahora los eventos del mouse para Nuklear ahora
          * los procesamos en bucle y no por eventos.
          */
+    }
+    @Override
+    public boolean isEscribiendo() {
+        return gui_consola.getMensaje().isFocused();
+    }
+
+    public void setEscribiendo(boolean escribiendo) {
+        this.escribiendo = escribiendo;
     }
 }
