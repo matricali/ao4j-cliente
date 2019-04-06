@@ -40,7 +40,6 @@ public abstract class Recursos {
     private static AnimEscudo[] animEscudos;
     private static AnimEfecto[] animEfectos;
     private static Sprite[] graficos;
-    private static int cantidadGraficos;
 
     public static void cargar() {
         // Cargamos los graficos indexados
@@ -334,6 +333,9 @@ public abstract class Recursos {
      * @return
      */
     public static Sprite getSprite(int grhIndex) {
+        if (grhIndex > graficos.length) {
+            return new Sprite();
+        }
         return graficos[grhIndex];
     }
 
