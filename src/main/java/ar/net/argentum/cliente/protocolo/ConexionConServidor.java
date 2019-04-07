@@ -323,6 +323,7 @@ public class ConexionConServidor extends Thread {
         try {
             int numMapa = dis.readInt();
             cliente.getJuego().cargarMapa(numMapa);
+            cliente.getMotorGrafico().getPersonajes().clear();
             if (!cliente.isJugando()) {
                 cliente.setJugando(true);
             }
@@ -493,7 +494,7 @@ public class ConexionConServidor extends Thread {
 
             LOGGER.debug("PQT_PERSONAJE_QUITAR<<" + charindex);
 
-            cliente.getMotorGrafico().getPersonaje(charindex).setActivo(false);
+            cliente.getMotorGrafico().quitarPersonaje(charindex);
         } catch (IOException ex) {
             LOGGER.fatal(null, ex);
         }

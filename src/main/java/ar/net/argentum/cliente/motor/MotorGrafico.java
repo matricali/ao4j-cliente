@@ -11,6 +11,9 @@ import ar.net.argentum.cliente.juego.Usuario;
 import ar.net.argentum.cliente.mundo.Baldosa;
 import ar.net.argentum.cliente.mundo.Orientacion;
 import ar.net.argentum.cliente.mundo.Posicion;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import org.apache.log4j.Logger;
 import static org.lwjgl.glfw.GLFW.*;
 import org.lwjgl.opengl.GL32C;
@@ -168,11 +171,7 @@ public class MotorGrafico {
     /**
      * Coleccion de personajes
      */
-    protected Personaje[] personajes = new Personaje[10000 + 1];
-    /**
-     * Charindex de mayor numero que hemos creado
-     */
-    protected int ultimoCharindex;
+    protected ConcurrentMap<Integer, Personaje> personajes = new ConcurrentHashMap<>();
     /**
      * Color de luz ambiental
      */
@@ -244,12 +243,6 @@ public class MotorGrafico {
 
         // Creamos la interfaz grafica
         this.interfaz = new GUI(cliente, ventana, juego, texturas);
-
-        // Inicializamos los personajes
-        for (int i = 1; i <= 10000; i++) {
-            personajes[i] = new Personaje();
-            personajes[i].setActivo(false);
-        }
 
         this.corriendo = true;
         cliente.setJugando(false);
@@ -565,13 +558,13 @@ public class MotorGrafico {
 
                 // Hay un personaje parado en esta baldosa?
                 if (baldosa.getCharindex() > 0) {
-                    Personaje p = personajes[baldosa.getCharindex()];
 
-                    if (!p.isActivo()) {
+                    if (!personajes.containsKey(baldosa.getCharindex())) {
                         // Si el personaje no esta activo, entonces lo sacamos
                         baldosa.setCharindex(0);
                     } else {
                         // Si el personaje esta activo, entonces lo dibujamos
+                        Personaje p = personajes.get(baldosa.getCharindex());
                         dibujarPersonaje(p, xd, yd);
                     }
                 }
@@ -623,7 +616,7 @@ public class MotorGrafico {
      * @param pixelOffsetY Offset vertical en pixeles
      */
     public void dibujarPersonaje(int CharIndex, int pixelOffsetX, int pixelOffsetY) {
-        dibujarPersonaje(personajes[CharIndex], pixelOffsetX, pixelOffsetY);
+        dibujarPersonaje(personajes.get(CharIndex), pixelOffsetX, pixelOffsetY);
     }
 
     /**
@@ -881,13 +874,10 @@ public class MotorGrafico {
      * @return Charindex del personaje creado
      */
     public int crearPersonaje(int charindex, String nombre, int x, int y, Orientacion orientacion, int cabeza, int cuerpo, int casco, int arma, int escudo) {
-        if (charindex > ultimoCharindex) {
-            ultimoCharindex = charindex;
-        }
-        if (personajes[charindex].isActivo()) {
+        if (personajes.containsKey(charindex)) {
             return 0;
         }
-        personajes[charindex] = new Personaje(
+        personajes.put(charindex, new Personaje(
                 nombre,
                 orientacion,
                 new Posicion(x, y),
@@ -895,17 +885,14 @@ public class MotorGrafico {
                 cuerpo,
                 casco,
                 arma,
-                escudo);
-
-        personajes[charindex].setActivo(true);
+                escudo
+        ));
+        LOGGER.debug("Agregado nuevo personaje " + charindex + "-" + nombre);
         return charindex;
     }
 
     public void cambiarPersonaje(int charindex, Orientacion orientacion, int cabeza, int cuerpo, int casco, int arma, int escudo) {
-        if (charindex > ultimoCharindex) {
-            return;
-        }
-        if (!personajes[charindex].isActivo()) {
+        if (!personajes.containsKey(charindex)) {
             return;
         }
 
@@ -925,10 +912,8 @@ public class MotorGrafico {
      * @see RefreshAllChars
      */
     public void personajesActualizarTodos() {
-        for (short i = 1; i <= ultimoCharindex; i++) {
-            if (personajes[i].isActivo()) {
-                juego.getMapa().getBaldosa(personajes[i].getPosicion()).setCharindex(i);
-            }
+        for (Map.Entry<Integer, Personaje> entry : personajes.entrySet()) {
+            juego.getMapa().getBaldosa(entry.getValue().getPosicion()).setCharindex(entry.getKey());
         }
     }
 
@@ -944,7 +929,16 @@ public class MotorGrafico {
      * @return Obtiene la instancia del personaje correspondiente al charindex
      */
     public Personaje getPersonaje(int charindex) {
-        return personajes[charindex];
+        return personajes.get(charindex);
+    }
+
+    /**
+     * Eliminar un personaje
+     *
+     * @param charindex
+     */
+    public void quitarPersonaje(int charindex) {
+        personajes.remove(charindex);
     }
 
     /**
@@ -960,13 +954,7 @@ public class MotorGrafico {
         fuente.dibujarTexto(x + viewportX, y + viewportY, idFuente, color, texto);
     }
 
-    /**
-     * Obtiene el charindex de mayor numero
-     *
-     * @return
-     */
-    public int getUltimoCharindex() {
-        return ultimoCharindex;
+    public ConcurrentMap<Integer, Personaje> getPersonajes() {
+        return personajes;
     }
-
 }

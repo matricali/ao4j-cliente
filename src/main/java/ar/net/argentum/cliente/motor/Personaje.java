@@ -226,20 +226,6 @@ public class Personaje {
     }
 
     /**
-     * @return the activo
-     */
-    public boolean isActivo() {
-        return activo == 1;
-    }
-
-    /**
-     * @param activo the activo to set
-     */
-    public void setActivo(boolean activo) {
-        this.activo = activo ? (byte) 1 : 0;
-    }
-
-    /**
      * @param posicion the posicion to set
      */
     public void setPosicion(Posicion posicion) {
