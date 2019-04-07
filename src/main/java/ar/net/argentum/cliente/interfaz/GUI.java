@@ -693,6 +693,7 @@ public class GUI implements IInterfaz {
          * los procesamos en bucle y no por eventos.
          */
     }
+
     @Override
     public boolean isEscribiendo() {
         return gui_consola.getMensaje().isFocused();
@@ -700,5 +701,20 @@ public class GUI implements IInterfaz {
 
     public void setEscribiendo(boolean escribiendo) {
         this.escribiendo = escribiendo;
+    }
+
+    /**
+     * Hace foco para escribir en la consola
+     */
+    @Override
+    public void focoConsola() {
+        gui_consola.hacerFoco();
+    }
+
+    /**
+     * @return contexto de Nuklear
+     */
+    public NkContext getNkContext() {
+        return ctx;
     }
 }
