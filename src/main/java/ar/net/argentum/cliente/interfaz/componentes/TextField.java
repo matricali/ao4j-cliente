@@ -78,8 +78,18 @@ public class TextField {
      * @param context
      */
     public void render(NkContext context) {
-        if (nk_widget_is_mouse_clicked(context, NK_BUTTON_LEFT)) {
-            nk_edit_focus(context, NK_EDIT_DEFAULT);
+        render(context, false);
+    }
+
+    /**
+     * This method uses Nuklear to draw the text field
+     *
+     * @param context
+     * @param focus
+     */
+    public void render(NkContext context, boolean focus) {
+        if (focus) {
+            nk_edit_focus(context, NK_EDIT_SIMPLE);
         }
         // No olvidarse de usar `maxLength + 1` porque Nuklear omite el ultimo caracter
         int ret = nk_edit_string(context, options, content, length, maxLength + 1, filter);
