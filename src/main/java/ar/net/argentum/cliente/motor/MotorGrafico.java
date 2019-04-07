@@ -359,9 +359,13 @@ public class MotorGrafico {
             }
         }
 
-        dibujarPantalla(user.getPosicion().x() - desplazamiento.x(),
-                user.getPosicion().y() - desplazamiento.y(),
-                (int) (offsetCounterX), (int) (offsetCounterY));
+        try {
+            dibujarPantalla(user.getPosicion().x() - desplazamiento.x(),
+                    user.getPosicion().y() - desplazamiento.y(),
+                    (int) (offsetCounterX), (int) (offsetCounterY));
+        } catch (Exception ex) {
+            LOGGER.fatal(ex.getLocalizedMessage(), ex);
+        }
     }
 
     /**
