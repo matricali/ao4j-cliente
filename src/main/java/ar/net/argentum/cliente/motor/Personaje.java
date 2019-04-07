@@ -28,7 +28,6 @@ import ar.net.argentum.cliente.mundo.Posicion;
  */
 public class Personaje {
 
-    protected byte activo;
     protected String nombre;
     protected Orientacion orientacion;
     protected Posicion posicion = new Posicion(0, 0);
@@ -40,7 +39,7 @@ public class Personaje {
     protected AnimEscudo escudo;
     protected AnimEfecto efecto;
 
-    byte Moving;
+    protected boolean moviendose;
     protected short scrollDirectionX;
     protected short scrollDirectionY;
     protected float moveOffsetX;
@@ -68,7 +67,7 @@ public class Personaje {
         this.casco = casco;
         this.arma = arma;
         this.escudo = escudo;
-        this.Moving = 0;
+        this.moviendose = false;
         setMoveOffsetX(0);
         setMoveOffsetY(0);
     }
@@ -82,7 +81,7 @@ public class Personaje {
         setCasco(casco);
         setArma(arma);
         setEscudo(escudo);
-        this.Moving = 0;
+        this.moviendose = false;
         setMoveOffsetX(0);
         setMoveOffsetY(0);
     }
@@ -99,7 +98,7 @@ public class Personaje {
     public Personaje setMovimiento(int x, int y, Orientacion orientacion) {
         this.setMoveOffsetX(-1 * (MotorGrafico.TILE_PIXEL_WIDTH * x));
         this.setMoveOffsetY(-1 * (MotorGrafico.TILE_PIXEL_HEIGHT * y));
-        this.Moving = 1;
+        this.moviendose = true;
         this.setOrientacion(orientacion);
         this.setScrollDirectionX((short) x);
         this.setScrollDirectionY((short) y);
@@ -111,12 +110,12 @@ public class Personaje {
         getArma().getAnimacion(getOrientacion()).reiniciar();
         getEscudo().getAnimacion(getOrientacion()).reiniciar();
 
-        this.Moving = 0;
+        this.moviendose = false;
         return this;
     }
 
     public boolean estaMoviendose() {
-        return Moving != 0;
+        return moviendose;
     }
 
     public boolean esVisible() {
