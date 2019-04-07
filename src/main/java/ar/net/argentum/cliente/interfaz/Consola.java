@@ -44,6 +44,7 @@ public class Consola {
     protected final GUI padre;
     protected final TextField mensaje;
     protected final CircularArrayList<String> mensajes;
+    protected boolean foco = false;
     protected final int alturaRenglon = 14;
     protected final Map<Character, NkColor> colores = new HashMap<Character, NkColor>() {
         {
@@ -80,6 +81,8 @@ public class Consola {
                 padre.getCliente().getConexion().enviarChat(mensaje);
                 // Borramos el campo
                 campo.reset();
+                // Quitamos el foco
+                nk_edit_unfocus(padre.getNkContext());
             }
         });
     }
@@ -131,7 +134,10 @@ public class Consola {
 
                 // Ingreso de mensajes
                 nk_layout_row_dynamic(ctx, 20, 1);
-                mensaje.render(ctx);
+                {
+                    mensaje.render(ctx, foco);
+                }
+                this.foco = false;
             }
             nk_end(ctx);
         }
@@ -146,6 +152,14 @@ public class Consola {
         mensajes.add(texto);
         // Movemos el scroll al final
         scrollVertOffset.put(0, (alturaRenglon + 2) * mensajes.size());
+    }
+
+    public void hacerFoco() {
+        this.foco = true;
+    }
+
+    public TextField getMensaje() {
+        return mensaje;
     }
 
     protected String normalizar(String input) {

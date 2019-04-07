@@ -76,4 +76,9 @@ public interface IInterfaz {
      * @return Devuelve verdadero si esta isEscribiendo en alguna caja de texto
      */
     public boolean isEscribiendo();
+
+    /**
+     * Hacer foco en la consola para escribir comandos
+     */
+    public void focoConsola();
 }
